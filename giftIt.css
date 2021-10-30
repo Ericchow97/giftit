@@ -31,3 +31,7 @@ form {
 .frappe-chart .chart {
     width: 100%;
 }
+
+.Polaris-EmptyState__ImageContainer {
+    width: 50%;
+}

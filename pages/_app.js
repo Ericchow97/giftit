@@ -97,6 +97,9 @@ MyApp.getInitialProps = async ({ ctx }) => {
     }
   })).json()
 
+  
+  console.log(`App: ${configuration}`)
+
   return {
     host: ctx.query.host,
     redirect,

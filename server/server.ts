@@ -287,6 +287,8 @@ app.prepare().then(async () => {
         redirect = await getSubscriptionUrl(ctx, shopOrigin, btoa(`${shopOrigin}/admin`).replace('=', ''))
       }
 
+      console.log(`Server: ${configuration}`)
+
       ctx.body = {
         shopOrigin: shopOrigin,
         orders,
