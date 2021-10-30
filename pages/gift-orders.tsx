@@ -72,6 +72,13 @@ import {
     order: Order,
     index: number
   }
+
+  declare enum SelectionType {
+    All = "all",
+    Page = "page",
+    Multi = "multi",
+    Single = "single"
+}
   
   const GiftOrders = ({ shopOrigin, orders }: IProps) => {
     const [activeOrders, setActiveOrders] = useState<Order[]>(orders)
@@ -195,6 +202,14 @@ import {
   
     const handleOpen = (index: number) => {
       setActiveOrder({ order: activeOrders[index], index: index })
+      console.log('handle Open stuff')
+      console.log(activeOrders[index])
+      console.log(selectedResources)
+      handleSelectionChange(
+        SelectionType.Single,
+        selectedResources.includes(activeOrders[index].id),
+        activeOrders[index].id
+      )
       toggleModal();
     }
   
