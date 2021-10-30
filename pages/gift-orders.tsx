@@ -76,7 +76,7 @@ interface ActiveOrder {
 const GiftOrders = ({ shopOrigin, orders }: IProps) => {
   const [activeOrders, setActiveOrders] = useState<Order[]>(orders)
   const [activeOrder, setActiveOrder] = useState<ActiveOrder>({ order: orders[0], index: 0 });
-  const [activeOrderRecent, setActiveOrderRecent] = useState(false);
+  let activeOrderRecent = false
 
   // Filter states
   const [statusSelect, setStatusSelect] = useState<string[]>([]);
@@ -197,7 +197,7 @@ const GiftOrders = ({ shopOrigin, orders }: IProps) => {
   const handleOpen = (index: number) => {
     setActiveOrder({ order: activeOrders[index], index: index })
     console.log('opened')
-    setActiveOrderRecent(true)
+    activeOrderRecent = true
     toggleModal();
   }
 
@@ -432,13 +432,10 @@ const GiftOrders = ({ shopOrigin, orders }: IProps) => {
                     allResourcesSelected ? 'All' : selectedResources.length
                   }
                   onSelectionChange={(selectionType, isSelecting, selection) => {
-                    console.log(selectionType)
-                    console.log(isSelecting)
-                    console.log(selection)
                     console.log(activeOrderRecent)
                     if (activeOrderRecent) {
-                      setActiveOrderRecent(false)
-
+                      activeOrderRecent = false
+                      return
                     }
                     handleSelectionChange(
                       selectionType,
