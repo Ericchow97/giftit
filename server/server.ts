@@ -65,6 +65,7 @@ app.prepare().then(async () => {
   // TODO: update mongodb IP access list to wherever code is stored 
   // TODO: update database to actual database on launch
   // TODO: Look into logging and monitoring https://docs.mongodb.com/drivers/node/fundamentals/indexes
+
   const client = new MongoClient(uri);
   try {
     await client.connect();
@@ -73,8 +74,6 @@ app.prepare().then(async () => {
     console.log(err)
   }
   const db = client.db(process.env.DB_NAME).collection<ShopCollection>('shopData');
-
-
 
   server.use(cors());
   server.keys = [Shopify.Context.API_SECRET_KEY];
@@ -286,8 +285,6 @@ app.prepare().then(async () => {
         ctx.client = createClient(shopOrigin, accessToken)
         redirect = await getSubscriptionUrl(ctx, shopOrigin, btoa(`${shopOrigin}/admin`).replace('=', ''))
       }
-
-      console.log(`Server: ${configuration}`)
 
       ctx.body = {
         shopOrigin: shopOrigin,

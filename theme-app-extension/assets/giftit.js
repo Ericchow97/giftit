@@ -26,6 +26,7 @@ document.querySelector('head').appendChild(telephone_script);
 
 // update button to match type
 document.querySelector('#giftit').classList = giftitRef.querySelector('button').classList
+document.querySelector('#giftit').parentElement = giftitRef.querySelector('button').parentElement.classList
 
 const modalRef = document.querySelector('.giftit-order-modal')
 

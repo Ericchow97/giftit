@@ -39,7 +39,6 @@ function userLoggedInFetch(app) {
 
 function MyProvider(props) {
   const app = useAppBridge();
-  console.log(props.redirect)
   if (props.redirect) {
     const redirect = Redirect.create(app);
     redirect.dispatch(Redirect.Action.REMOTE, props.redirect);
@@ -96,9 +95,6 @@ MyApp.getInitialProps = async ({ ctx }) => {
       shop: shopName
     }
   })).json()
-
-  
-  console.log(`App: ${configuration}`)
 
   return {
     host: ctx.query.host,
