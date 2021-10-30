@@ -17,6 +17,7 @@ import { ShopCollection, Order, CustomError } from '../types';
 import { createClient, getSubscriptionUrl, giftitFunctions } from './handlers/index'
 
 import fs from 'fs'
+import path from 'path'
 
 // Database Imports 
 import { MongoClient } from 'mongodb';
@@ -676,36 +677,32 @@ app.prepare().then(async () => {
     }
   })
 
-  //TODO: remove when have actual server?
   /**** STATIC FILES ****/
-
   /**
    * Endpoint to serve script
    */
-  router.get('/giftit-script', koaBody(), async (ctx: Koa.Context) => {
-    try {
-      ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-product-script.js', "utf8");
-    } catch (error) {
-      if ((error as CustomError).type) {
-        const err = error as CustomError
-        console.log(error)
-        ctx.status = 500;
-        ctx.body = {
-          type: err.type,
-          message: err.message
-        };
-      }
-    }
-  })
+  // router.get('/giftit-script', koaBody(), async (ctx: Koa.Context) => {
+  //   try {
+  //     ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-product-script.js', "utf8");
+  //   } catch (error) {
+  //     if ((error as CustomError).type) {
+  //       const err = error as CustomError
+  //       console.log(error)
+  //       ctx.status = 500;
+  //       ctx.body = {
+  //         type: err.type,
+  //         message: err.message
+  //       };
+  //     }
+  //   }
+  // })
 
   /**
    * Endpoint to serve css
    */
   router.get('/giftit-css', koaBody(), async (ctx: Koa.Context) => {
-    console.log('css')
-
     try {
-      ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-styles.css', "utf8");
+      ctx.body = fs.readFileSync(path.join(__dirname, '..', 'shopify-web', 'giftit-styles.css'), "utf8");
       ctx.type = "text/css";
     } catch (error) {
       if ((error as CustomError).type) {
@@ -724,12 +721,9 @@ app.prepare().then(async () => {
    * Endpoint to serve privacy policy
    */
   router.get('/privacy-policy', koaBody(), async (ctx: Koa.Context) => {
-    console.log('privacy')
     try {
-      ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-privacy-policy.html', "utf8");
-      console.log('did I get here?')
+      ctx.body = fs.readFileSync(path.join(__dirname, '..', 'shopify-web', 'giftit-privacy-policy.html'), "utf8");
     } catch (error) {
-      console.log(error)
       if ((error as CustomError).type) {
         const err = error as CustomError
         console.log(error)
