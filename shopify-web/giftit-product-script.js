@@ -4,7 +4,7 @@ const head = document.querySelector('head');
 const giftit_css = document.createElement('link');
 giftit_css.rel = 'stylesheet';
 giftit_css.type = 'text/css';
-giftit_css.href = 'https://giftit-app.herokuapp.comgiftit-css';
+giftit_css.href = 'https://giftit-app.herokuapp.com/giftit-css';
 giftit_css.media = 'all';
 
 head.appendChild(giftit_css);
@@ -41,7 +41,7 @@ if (giftitRef) {
 <div class='giftit-container'>
     <button type='button' id='giftit' name='Gift_Item' >Give as a gift</button>
 </div>
-<form action="https://giftit-app.herokuapp.comgift-checkout" method="POST" autocomplete="on" class="giftit-form">
+<form action="https://giftit-app.herokuapp.com/gift-checkout" method="POST" autocomplete="on" class="giftit-form">
     <div id="giftit-modal" class="giftit-order-modal hide">
         <div class="giftit-modal-content">
             <div class='giftit-close-top'>
@@ -570,7 +570,7 @@ if (giftitRef) {
         data.shop = Shopify.shop
         data.phone = intlTel.getNumber()
         //TODO: Change the address with new site
-        const res = await fetch('https://giftit-app.herokuapp.comgift-checkout', {
+        const res = await fetch('https://giftit-app.herokuapp.com/gift-checkout', {
             method: 'POST',
             mode: 'cors',
             headers: {

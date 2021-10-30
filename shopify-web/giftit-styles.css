@@ -544,3 +544,7 @@ button[disabled] {
 .giftit-gift-information > .giftit-container .giftit-input-item:only-child {
   margin-right: 0;
 }
+
+.giftit-btn-address{
+  display: inline-block;
+}
