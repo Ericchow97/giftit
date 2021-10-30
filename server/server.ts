@@ -10,6 +10,7 @@ import Router from "koa-router";
 import koaBody from 'koa-body';
 import cors from '@koa/cors';
 import axios from 'axios';
+import atob from 'atob';
 import btoa from 'btoa';
 import isVerified from 'shopify-jwt-auth-verify'
 
