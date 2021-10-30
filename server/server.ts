@@ -727,7 +727,9 @@ app.prepare().then(async () => {
     console.log('privacy')
     try {
       ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-privacy-policy.html', "utf8");
+      console.log('did I get here?')
     } catch (error) {
+      console.log(error)
       if ((error as CustomError).type) {
         const err = error as CustomError
         console.log(error)
