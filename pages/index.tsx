@@ -46,7 +46,7 @@ const Index = (props: IProps) => {
   useEffect(() => {
     const getOrderPrices = async (totalPrice: number) => {
       const sessionToken = await getSessionToken(shopifyApp);
-      const currencyCode = await (await fetch(`https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.iographql`, {
+      const currencyCode = await (await fetch(`https://giftit-app.herokuapp.comgraphql`, {
         method: 'POST',
         mode: 'cors',
         headers: {

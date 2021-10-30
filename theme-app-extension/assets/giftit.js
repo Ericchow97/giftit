@@ -290,7 +290,7 @@ document.querySelector('form.giftit-form').addEventListener('submit', async (eve
     data.shop = Shopify.shop
     data.phone = intlTel.getNumber()
     //TODO: Change the address with new site
-    const res = await fetch('https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.io/gift-checkout', {
+    const res = await fetch('https://giftit-app.herokuapp.com/gift-checkout', {
         method: 'POST',
         mode: 'cors',
         headers: {

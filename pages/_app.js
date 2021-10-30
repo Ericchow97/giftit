@@ -89,7 +89,7 @@ MyApp.getInitialProps = async ({ ctx }) => {
     );
   }
 
-  const { shopOrigin, orders, configuration, redirect } = await (await fetch(`https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.io/get-shop-data`, {
+  const { shopOrigin, orders, configuration, redirect } = await (await fetch(`https://giftit-app.herokuapp.com/get-shop-data`, {
     method: 'GET',
     credentials: "include",
     headers: {

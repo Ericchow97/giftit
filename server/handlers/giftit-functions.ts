@@ -38,7 +38,7 @@ export const handleInstallation = async (shop: string, accessToken: string): Pro
     try {
         // install script tags
         // see if script tag already exists
-        const { data: { script_tags } } = await axios.get(`https://${shop}/admin/api/2021-04/script_tags.json?src=https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.io/giftit-script`, {
+        const { data: { script_tags } } = await axios.get(`https://${shop}/admin/api/2021-04/script_tags.json?src=https://giftit-app.herokuapp.com/giftit-script`, {
             headers: {
                 "X-Shopify-Access-Token": accessToken
             }
@@ -48,7 +48,7 @@ export const handleInstallation = async (shop: string, accessToken: string): Pro
             const { data } = await axios.post(`https://${shop}/admin/api/2021-04/script_tags.json`, {
                 "script_tag": {
                     "event": "onload",
-                    "src": "https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.io/giftit-script"
+                    "src": "https://giftit-app.herokuapp.com/giftit-script"
                 }
             }, {
                 headers: {

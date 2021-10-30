@@ -232,7 +232,7 @@ import {
   
       const sessionToken = await getSessionToken(app);
   
-      const ret = await (await fetch(`https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.io/delete-orders`, {
+      const ret = await (await fetch(`https://giftit-app.herokuapp.com/delete-orders`, {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -294,7 +294,7 @@ import {
       if (emailList.length) {
         const sessionToken = await getSessionToken(app);
   
-        const ret = await (await fetch(`https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.io/send-reminders`, {
+        const ret = await (await fetch(`https://giftit-app.herokuapp.com/send-reminders`, {
           method: 'POST',
           mode: 'cors',
           headers: {
