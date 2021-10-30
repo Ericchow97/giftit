@@ -702,6 +702,8 @@ app.prepare().then(async () => {
    * Endpoint to serve css
    */
   router.get('/giftit-css', koaBody(), async (ctx: Koa.Context) => {
+    console.log('css')
+
     try {
       ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-styles.css', "utf8");
       ctx.type = "text/css";
@@ -722,6 +724,7 @@ app.prepare().then(async () => {
    * Endpoint to serve privacy policy
    */
   router.get('/privacy-policy', koaBody(), async (ctx: Koa.Context) => {
+    console.log('privacy')
     try {
       ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-privacy-policy.html', "utf8");
     } catch (error) {
