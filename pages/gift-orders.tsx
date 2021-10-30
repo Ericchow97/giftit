@@ -428,11 +428,16 @@ import {
                     selectedItemsCount={
                       allResourcesSelected ? 'All' : selectedResources.length
                     }
-                    onSelectionChange={(selectionType, isSelecting, selection) => handleSelectionChange(
+                    onSelectionChange={(selectionType, isSelecting, selection) => {
+                      console.log(selectionType)
+                      console.log(isSelecting)
+                      console.log(selection)
+
+                      handleSelectionChange(
                       selectionType,
                       selectionType === 'page' && displayOrders.length === selectedResources.length ? false : isSelecting,
                       selection
-                    )}
+                    )}}
                     promotedBulkActions={promotedBulkActions}
                     headings={[
                       { title: 'Date' },
