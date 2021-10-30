@@ -46,22 +46,26 @@ const Index = (props: IProps) => {
   useEffect(() => {
     const getOrderPrices = async (totalPrice: number) => {
       const sessionToken = await getSessionToken(shopifyApp);
-      const currencyCode = await (await fetch(`https://giftit-app.herokuapp.com/graphql`, {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-          'Authorization': sessionToken
-        },
-        body: `
+      try {
+        const currencyCode = await (await fetch(`https://giftit-app.herokuapp.com/graphql`, {
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'Authorization': sessionToken
+          },
+          body: `
               query GetCurrency {
                 shop {
                   currencyCode
                 }
               }
             `
-      })).text()
-      setTotalOrderPrice(`${currencyCode} ${totalPrice.toFixed(2)}`);
-      setAverageOrderPrice(`${currencyCode} ${(totalPrice / props.orders.length).toFixed(2)}`);
+        })).text()
+        setTotalOrderPrice(`${currencyCode} ${totalPrice.toFixed(2)}`);
+        setAverageOrderPrice(`${currencyCode} ${(totalPrice / props.orders.length).toFixed(2)}`);
+      } catch (err) {
+        console.log(err)
+      }
     }
     if (props.orders.length) {
       let outstanding = 0
@@ -153,20 +157,20 @@ const Index = (props: IProps) => {
           </>
         ) : (
           <>
-              <EmptyState
-                heading="It seems like you have no gift orders yet"
-                secondaryAction={{
-                  content: 'Learn more',
-                  accessibilityLabel: 'Learn more',
-                  onAction: () => setModalActive(!modalActive),
-                }}
-                image={img}
-              >
-              </EmptyState>
-              <LearnMore
-                active={modalActive}
-                setActive={setModalActive}
-              />
+            <EmptyState
+              heading="It seems like you have no gift orders yet"
+              secondaryAction={{
+                content: 'Learn more',
+                accessibilityLabel: 'Learn more',
+                onAction: () => setModalActive(!modalActive),
+              }}
+              image={img}
+            >
+            </EmptyState>
+            <LearnMore
+              active={modalActive}
+              setActive={setModalActive}
+            />
           </>
         )}
       </Layout>
