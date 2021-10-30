@@ -1,8 +1,9 @@
 <div class='giftit-container'>
-    <button type='button' id='giftit' name='Gift_Item'>Give as a gift</button>
+    <form class='form'>
+        <button type='button' id='giftit' name='Gift_Item'>Give as a gift</button>
+    </form>
 </div>
-<form action="https://giftit-app.herokuapp.com/gift-checkout" method="POST"
-    autocomplete="on" class="giftit-form">
+<form action="https://giftit-app.herokuapp.com/gift-checkout" method="POST" autocomplete="on" class="giftit-form">
     <div id="giftit-modal" class="giftit-order-modal hide">
         <div class="giftit-modal-content">
             <div class='giftit-close-top'>
@@ -271,6 +272,7 @@
 "name": "Gift Button",
 "target": "section",
 "stylesheet": "giftit-styles.css",
-"javascript": "giftit.js"
+"javascript": "giftit.js",
+"templates": ["product"]
 }
 {% endschema %}
