@@ -73,7 +73,7 @@ import {
     index: number
   }
 
-  declare enum SelectionType {
+  enum SelectionType {
     All = "all",
     Page = "page",
     Multi = "multi",
@@ -206,7 +206,7 @@ import {
       console.log(activeOrders[index])
       console.log(selectedResources)
       handleSelectionChange(
-        SelectionType.Single,
+        "single" as SelectionType,
         selectedResources.includes(activeOrders[index].id),
         activeOrders[index].id
       )
