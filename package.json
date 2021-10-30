@@ -7,7 +7,7 @@
     "oldDev": "cross-env NODE_ENV=development nodemon ./server/index.js --watch ./server/index.js",
     "dev": "cross-env NODE_ENV=development ts-node ./server/server.ts",
     "build": "NEXT_TELEMETRY_DISABLED=1 next build",
-    "start": "cross-env NODE_ENV=production node ./server/index.js"
+    "start": "cross-env NODE_ENV=production ts-node ./server/server.ts"
   },
   "repository": {
     "type": "git",
