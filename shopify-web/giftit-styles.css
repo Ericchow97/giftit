@@ -536,3 +536,11 @@ button[disabled] {
     transform: scale3d(1.1, 1.1, 1);
   }
 }
+
+.giftit-input-address{
+  flex-direction: column;
+}
+
+.giftit-gift-information > .giftit-container .giftit-input-item:only-child {
+  margin-right: 0;
+}
