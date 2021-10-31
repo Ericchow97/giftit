@@ -358,6 +358,8 @@ app.prepare().then(async () => {
         //TODO1: Review all of the findoneandUpdate undefinds
         // TODO: see if inventory item was released from hold for all deleteOrders calls
         // remove orders in database
+        console.log(toRemove)
+        console.log(idList)
         const { value } = await db.findOneAndUpdate({ shop: dest }, {
           $pull: { "orders": { "id": { '$in': idList } } } && undefined
         });

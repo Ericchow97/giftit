@@ -233,7 +233,7 @@ const GiftOrders = ({ shopOrigin, orders }: IProps) => {
     }
 
     const sessionToken = await getSessionToken(app);
-
+    console.log(toRemove)
     const ret = await (await fetch(`https://giftit-app.herokuapp.com/delete-orders`, {
       method: 'POST',
       mode: 'cors',
@@ -263,9 +263,8 @@ const GiftOrders = ({ shopOrigin, orders }: IProps) => {
     const activeOrdersCopy = [...activeOrders]
     const currTime = new Date()
     // single reminder email
-    //&& currTime.getTime() > new Date(activeOrdersCopy[singleOrder.index].lastEmailSentRecipient).getTime() + 60 * 60 * 1000
     if (singleOrder) {
-      if (activeOrdersCopy[singleOrder.index].status === 'Open' ) {
+      if (activeOrdersCopy[singleOrder.index].status === 'Open' && currTime.getTime() > new Date(activeOrdersCopy[singleOrder.index].lastEmailSentRecipient).getTime() + 60 * 60 * 1000) {
         activeOrdersCopy[singleOrder.index].lastEmailSentRecipient = currTime.toISOString()
         activeOrdersCopy[singleOrder.index].tag = ''
         emailList.push(singleOrder.order)
@@ -307,8 +306,7 @@ const GiftOrders = ({ shopOrigin, orders }: IProps) => {
         body: JSON.stringify({ emailList: emailList })
       }
       )).json()
-      
-      console.log(ret)
+
       if (ret.success) {
         setActiveOrders(activeOrdersCopy)
         setToastActiveEmail(true)
