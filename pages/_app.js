@@ -96,7 +96,7 @@ MyApp.getInitialProps = async ({ ctx }) => {
       shop: shopName
     }
   })).json()
-  console.log(app)
+  console.log('app')
   console.log(shopOrigin)
   return {
     host: ctx.query.host,
