@@ -104,7 +104,7 @@ app.prepare().then(async () => {
               orders: { $cond: [{ $not: ["$orders"] }, [], "$orders"] },
               storeName: data.shop.name,
               storeEmail: data.shop.email,
-              origin: '',
+              origin: { $cond: [{ $not: ["$origin"] }, '', "$origin"] },
               configuration: {
                 $cond: [{ $not: ["$configuration"] },
                 {
@@ -465,8 +465,6 @@ app.prepare().then(async () => {
     const orderInformation = ctx.request.body;
     const shop = orderInformation.shop;
     const origin = <string>ctx.request.header.origin;
-    console.log(shop)
-    console.log(origin)
     // generate random token
     orderInformation.token = Math.random().toString(36).substr(2, 10);
     orderInformation.purchaserName = orderInformation.purchaserName.toLowerCase().split(' ').map((word: string) => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
@@ -492,7 +490,7 @@ app.prepare().then(async () => {
         const draftInv = await giftitFunctions.createDraftInvoice(accessToken, shop, itemList, [1], orderInformation.purchaserEmail);
         if (draftInv) {
           // write order to DB
-          const ret = await db.updateOne({ shop: shop }, {
+          db.updateOne({ shop: shop }, {
             $set: {
               origin: origin
             },
@@ -519,7 +517,6 @@ app.prepare().then(async () => {
           }, {
             upsert: true
           });
-          console.log(ret)
           // send confirmation emails
           const sentEmail = await giftitFunctions.sendEmailOrMessage(orderInformation, origin, draftInv, configuration);
           //TODO: these errors build into client displays
