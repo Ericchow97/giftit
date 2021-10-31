@@ -559,6 +559,11 @@ const GiftOrders = ({ origin, orders }: IProps) => {
               <>
                 <EmptyState
                   heading="Manage your Gift Orders"
+                  action={{
+                    content: 'Install Now',
+                    accessibilityLabel: 'Install Now',
+                    url: '/installation',
+                  }}
                   secondaryAction={{
                     content: 'Learn more',
                     accessibilityLabel: 'Learn more',

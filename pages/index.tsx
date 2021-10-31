@@ -161,6 +161,11 @@ const Index = (props: IProps) => {
           <>
             <EmptyState
               heading="It seems like you have no gift orders yet"
+              action={{
+                content: 'Install Now',
+                accessibilityLabel: 'Install Now',
+                url: '/installation',
+              }}
               secondaryAction={{
                 content: 'Learn more',
                 accessibilityLabel: 'Learn more',
