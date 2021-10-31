@@ -87,6 +87,8 @@ const Index = (props: IProps) => {
           monthlyAmountTotal[index] += +props.orders[i].price
         }
       }
+      console.log(props.orders.length)
+      console.log(monthlyCount)
 
       setOutstandingOrders(outstanding);
       setCompletedOrders(completed);

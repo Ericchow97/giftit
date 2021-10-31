@@ -31,7 +31,7 @@ import { useAppBridge } from '@shopify/app-bridge-react';
 import { getSessionToken } from "@shopify/app-bridge-utils";
 
 interface IProps {
-  shopOrigin: string,
+  origin: string,
   orders: {
     id: string,
     name: string,
@@ -73,11 +73,11 @@ interface ActiveOrder {
   index: number
 }
 
-const GiftOrders = ({ shopOrigin, orders }: IProps) => {
+const GiftOrders = ({ origin, orders }: IProps) => {
   const [activeOrders, setActiveOrders] = useState<Order[]>(orders)
   const [activeOrder, setActiveOrder] = useState<ActiveOrder>({ order: orders[0], index: 0 });
   let activeOrderRecent = false
-  console.log(shopOrigin)
+  console.log(origin)
   // Filter states
   const [statusSelect, setStatusSelect] = useState<string[]>([]);
   const [tagSelect, setTagSelect] = useState<string[]>([]);
@@ -465,7 +465,7 @@ const GiftOrders = ({ shopOrigin, orders }: IProps) => {
                         content: 'Edit Order',
                         accessibilityLabel: "Edit Order",
                         external: true,
-                        url: `https://${shopOrigin}/admin/draft_orders/${activeOrder.order.id.substring(activeOrder.order.id.lastIndexOf('/') + 1)}`
+                        url: `https://${origin}/admin/draft_orders/${activeOrder.order.id.substring(activeOrder.order.id.lastIndexOf('/') + 1)}`
                       }}
                       secondaryActions={[
                         {
@@ -583,7 +583,7 @@ const GiftOrders = ({ shopOrigin, orders }: IProps) => {
 }
 
 GiftOrders.propTypes = {
-  shopOrigin: PropTypes.string.isRequired,
+  origin: PropTypes.string.isRequired,
   orders: PropTypes.array.isRequired
 }
 
