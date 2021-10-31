@@ -196,7 +196,6 @@ const GiftOrders = ({ shopOrigin, orders }: IProps) => {
 
   const handleOpen = (index: number) => {
     setActiveOrder({ order: activeOrders[index], index: index })
-    console.log('opened')
     activeOrderRecent = true
     toggleModal();
   }
@@ -264,8 +263,9 @@ const GiftOrders = ({ shopOrigin, orders }: IProps) => {
     const activeOrdersCopy = [...activeOrders]
     const currTime = new Date()
     // single reminder email
+    //&& currTime.getTime() > new Date(activeOrdersCopy[singleOrder.index].lastEmailSentRecipient).getTime() + 60 * 60 * 1000
     if (singleOrder) {
-      if (activeOrdersCopy[singleOrder.index].status === 'Open' && currTime.getTime() > new Date(activeOrdersCopy[singleOrder.index].lastEmailSentRecipient).getTime() + 60 * 60 * 1000) {
+      if (activeOrdersCopy[singleOrder.index].status === 'Open' ) {
         activeOrdersCopy[singleOrder.index].lastEmailSentRecipient = currTime.toISOString()
         activeOrdersCopy[singleOrder.index].tag = ''
         emailList.push(singleOrder.order)
@@ -307,7 +307,8 @@ const GiftOrders = ({ shopOrigin, orders }: IProps) => {
         body: JSON.stringify({ emailList: emailList })
       }
       )).json()
-
+      
+      console.log(ret)
       if (ret.success) {
         setActiveOrders(activeOrdersCopy)
         setToastActiveEmail(true)
