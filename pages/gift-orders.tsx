@@ -77,7 +77,7 @@ const GiftOrders = ({ shopOrigin, orders }: IProps) => {
   const [activeOrders, setActiveOrders] = useState<Order[]>(orders)
   const [activeOrder, setActiveOrder] = useState<ActiveOrder>({ order: orders[0], index: 0 });
   let activeOrderRecent = false
-
+  console.log(shopOrigin)
   // Filter states
   const [statusSelect, setStatusSelect] = useState<string[]>([]);
   const [tagSelect, setTagSelect] = useState<string[]>([]);
@@ -233,7 +233,6 @@ const GiftOrders = ({ shopOrigin, orders }: IProps) => {
     }
 
     const sessionToken = await getSessionToken(app);
-    console.log(toRemove)
     const ret = await (await fetch(`https://giftit-app.herokuapp.com/delete-orders`, {
       method: 'POST',
       mode: 'cors',
