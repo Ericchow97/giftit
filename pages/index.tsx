@@ -15,6 +15,7 @@ import LearnMore from '../components/LearnMore'
 
 import { useAppBridge } from '@shopify/app-bridge-react';
 import { getSessionToken } from "@shopify/app-bridge-utils";
+import {Redirect} from '@shopify/app-bridge/actions';
 
 const img = 'https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg';
 
@@ -164,7 +165,10 @@ const Index = (props: IProps) => {
               action={{
                 content: 'Install Now',
                 accessibilityLabel: 'Install Now',
-                url: '/installation',
+                onAction: () => {
+                  const redirect = Redirect.create(shopifyApp)
+                  redirect.dispatch(Redirect.Action.APP, '/installation');
+                }
               }}
               secondaryAction={{
                 content: 'Learn more',

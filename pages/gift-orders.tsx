@@ -29,6 +29,7 @@ import LearnMore from '../components/LearnMore';
 
 import { useAppBridge } from '@shopify/app-bridge-react';
 import { getSessionToken } from "@shopify/app-bridge-utils";
+import {Redirect} from '@shopify/app-bridge/actions';
 
 interface IProps {
   origin: string,
@@ -562,7 +563,10 @@ const GiftOrders = ({ origin, orders }: IProps) => {
                   action={{
                     content: 'Install Now',
                     accessibilityLabel: 'Install Now',
-                    url: '/installation',
+                    onAction: () => {
+                      const redirect = Redirect.create(app)
+                      redirect.dispatch(Redirect.Action.APP, '/installation');
+                    }
                   }}
                   secondaryAction={{
                     content: 'Learn more',
