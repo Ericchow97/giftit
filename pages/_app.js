@@ -62,6 +62,7 @@ function MyProvider(props) {
 
 const MyApp = ({ Component, shopOrigin, pageProps, host, redirect }) => {
   const [props] = useState(pageProps)
+  console.log(props)
   const config = { apiKey: API_KEY, shopOrigin, host, forceRedirect: true };
   return (
     <>
@@ -95,13 +96,14 @@ MyApp.getInitialProps = async ({ ctx }) => {
       shop: shopName
     }
   })).json()
-
+  console.log(app)
+  console.log(shopOrigin)
   return {
     host: ctx.query.host,
     redirect,
     shopOrigin: shopOrigin ? shopOrigin : shopName,
     pageProps: {
-      shopOrigin,
+      shopOrigin: shopOrigin ? shopOrigin : shopName,
       appName: 'GiftIt',
       orders: (orders ? orders : []),
       configuration
