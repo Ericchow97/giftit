@@ -96,14 +96,12 @@ MyApp.getInitialProps = async ({ ctx }) => {
       shop: shopName
     }
   })).json()
-  console.log('app')
-  console.log(shopOrigin)
   return {
     host: ctx.query.host,
     redirect,
     shopOrigin: shopOrigin ? shopOrigin : shopName,
     pageProps: {
-      shopOrigin: shopOrigin ? shopOrigin : shopName,
+      origin: shopOrigin ? shopOrigin : shopName,
       appName: 'GiftIt',
       orders: (orders ? orders : []),
       configuration

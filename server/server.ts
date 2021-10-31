@@ -279,8 +279,6 @@ app.prepare().then(async () => {
   router.get('/get-shop-data', async (ctx: Koa.Context) => {
     try {
       const shopOrigin = ctx.request.header.shop
-      console.log(server)
-      console.log(shopOrigin)
       // retrieve store information from database
       const { orders, configuration, subscribed, accessToken } = await db.findOne({ shop: shopOrigin }) || {};
       let redirect = ''
