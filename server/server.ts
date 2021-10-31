@@ -465,6 +465,7 @@ app.prepare().then(async () => {
     const orderInformation = ctx.request.body;
     const shop = orderInformation.shop;
     const origin = <string>ctx.request.header.origin;
+    console.log(shop)
     console.log(origin)
     // generate random token
     orderInformation.token = Math.random().toString(36).substr(2, 10);
@@ -491,7 +492,7 @@ app.prepare().then(async () => {
         const draftInv = await giftitFunctions.createDraftInvoice(accessToken, shop, itemList, [1], orderInformation.purchaserEmail);
         if (draftInv) {
           // write order to DB
-          const ret = db.updateOne({ shop: shop }, {
+          const ret = await db.updateOne({ shop: shop }, {
             $set: {
               origin: origin
             },
