@@ -77,7 +77,6 @@ const GiftOrders = ({ origin, orders }: IProps) => {
   const [activeOrders, setActiveOrders] = useState<Order[]>(orders)
   const [activeOrder, setActiveOrder] = useState<ActiveOrder>({ order: orders[0], index: 0 });
   let activeOrderRecent = false
-  console.log(origin)
   // Filter states
   const [statusSelect, setStatusSelect] = useState<string[]>([]);
   const [tagSelect, setTagSelect] = useState<string[]>([]);
