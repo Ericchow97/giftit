@@ -465,6 +465,7 @@ app.prepare().then(async () => {
     const orderInformation = ctx.request.body;
     const shop = orderInformation.shop;
     const origin = <string>ctx.request.header.origin;
+    console.log(origin)
     // generate random token
     orderInformation.token = Math.random().toString(36).substr(2, 10);
     orderInformation.purchaserName = orderInformation.purchaserName.toLowerCase().split(' ').map((word: string) => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
@@ -490,7 +491,7 @@ app.prepare().then(async () => {
         const draftInv = await giftitFunctions.createDraftInvoice(accessToken, shop, itemList, [1], orderInformation.purchaserEmail);
         if (draftInv) {
           // write order to DB
-          db.updateOne({ shop: shop }, {
+          const ret = db.updateOne({ shop: shop }, {
             $set: {
               origin: origin
             },
@@ -517,6 +518,7 @@ app.prepare().then(async () => {
           }, {
             upsert: true
           });
+          console.log(ret)
           // send confirmation emails
           const sentEmail = await giftitFunctions.sendEmailOrMessage(orderInformation, origin, draftInv, configuration);
           //TODO: these errors build into client displays
