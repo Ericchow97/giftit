@@ -72,13 +72,10 @@ const Index = (props: IProps) => {
       let completed = 0
       let totalPrice = 0
       const today = new Date()
-      const referenceDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      const referenceDate = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
       const minDate = new Date(today.getFullYear(), today.getMonth() - 2, 1);
       const monthlyCount = [0, 0, 0]
       const monthlyAmountTotal = [0, 0, 0]
-      console.log(props.orders)
-      console.log(minDate)
-      console.log(referenceDate)
 
       for (let i = 0; i < props.orders.length; i++) {
         props.orders[i].status === 'Complete' ? completed++ : outstanding++;
@@ -92,8 +89,6 @@ const Index = (props: IProps) => {
           monthlyAmountTotal[index] += +props.orders[i].price
         }
       }
-      console.log(props.orders.length)
-      console.log(monthlyCount)
 
       setOutstandingOrders(outstanding);
       setCompletedOrders(completed);
