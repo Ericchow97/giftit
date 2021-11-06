@@ -216,6 +216,7 @@ app.prepare().then(async () => {
           console.log(shop)
           console.log('Failed to register webhook', registration_orders.result, registration_name.result, registration_uninstall.result, registration_charge_status.result);
           ctx.redirect(`${process.env.HOST}/auth?shop=${shop}`)
+          return
         }
         // Redirect to app with shop parameter upon auth
         //TODO: TEST if delete, will be able to access data again?
