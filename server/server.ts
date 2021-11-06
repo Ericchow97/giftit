@@ -94,6 +94,7 @@ app.prepare().then(async () => {
               "X-Shopify-Access-Token": accessToken
             },
           });
+          console.log(data)
           // create/update database entry
           db.updateOne({ shop: shop }, [{
             $set: {
@@ -215,7 +216,7 @@ app.prepare().then(async () => {
         } else {
           console.log(shop)
           console.log('Failed to register webhook', registration_orders.result, registration_name.result, registration_uninstall.result, registration_charge_status.result);
-          ctx.redirect(`${process.env.HOST}/auth?shop=${shop}`)
+          ctx.redirect(`/auth?shop=${shop}`)
           return
         }
         // Redirect to app with shop parameter upon auth
