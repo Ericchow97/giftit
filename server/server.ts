@@ -215,12 +215,12 @@ app.prepare().then(async () => {
         } else {
           console.log(shop)
           console.log('Failed to register webhook', registration_orders.result, registration_name.result, registration_uninstall.result, registration_charge_status.result);
-          ctx.redirect(`/auth?shop=${shop}`)
+          ctx.redirect(`${process.env.HOST}/auth?shop=${shop}`)
         }
         // Redirect to app with shop parameter upon auth
         //TODO: TEST if delete, will be able to access data again?
         //TODO: test, can follow same charge cycle?
-
+        console.log('still after reedirect')
         ctx.client = createClient(shop, accessToken)
         ctx.redirect(await getSubscriptionUrl(ctx, ctx.state.shopify.shop, ctx.query.host))
       },
