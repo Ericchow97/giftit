@@ -94,7 +94,6 @@ app.prepare().then(async () => {
               "X-Shopify-Access-Token": accessToken
             },
           });
-          console.log(data)
           // create/update database entry
           db.updateOne({ shop: shop }, [{
             $set: {
@@ -211,18 +210,15 @@ app.prepare().then(async () => {
           },
         });
 
-        if (registration_orders.success && registration_name.success && registration_uninstall.success && registration_charge_status.success && false) {
+        if (registration_orders.success && registration_name.success && registration_uninstall.success && registration_charge_status.success) {
           console.log('Successfully registered webhook!');
         } else {
-          console.log(shop)
           console.log('Failed to register webhook', registration_orders.result, registration_name.result, registration_uninstall.result, registration_charge_status.result);
-          ctx.redirect(`/auth?shop=${shop}`)
           return
         }
         // Redirect to app with shop parameter upon auth
         //TODO: TEST if delete, will be able to access data again?
         //TODO: test, can follow same charge cycle?
-        console.log('still after reedirect')
         ctx.client = createClient(shop, accessToken)
         ctx.redirect(await getSubscriptionUrl(ctx, ctx.state.shopify.shop, ctx.query.host))
       },
