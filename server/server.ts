@@ -465,6 +465,7 @@ app.prepare().then(async () => {
     const orderInformation = ctx.request.body;
     const shop = orderInformation.shop;
     const origin = <string>ctx.request.header.origin;
+    console.log(shop)
     // generate random token
     orderInformation.token = Math.random().toString(36).substr(2, 10);
     orderInformation.purchaserName = orderInformation.purchaserName.toLowerCase().split(' ').map((word: string) => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');

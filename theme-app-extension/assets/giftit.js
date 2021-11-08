@@ -6,10 +6,10 @@ Array.prototype.forEach.call(document.querySelectorAll('form[action="/cart/add"]
 })
 
 const telephone_css = document.createElement('link');
-    telephone_css.rel = 'stylesheet';
-    telephone_css.type = 'text/css';
-    telephone_css.href = 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css';
-    telephone_css.media = 'all';
+telephone_css.rel = 'stylesheet';
+telephone_css.type = 'text/css';
+telephone_css.href = 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css';
+telephone_css.media = 'all';
 
 let intlTel;
 const telephone_script = document.createElement('script');
@@ -272,7 +272,6 @@ document.querySelector('form.giftit-form').addEventListener('submit', async (eve
     event.preventDefault();
     // get & update cookies to prevent users from wiping out inventory
     const giftitOrderCount = getCookieCount();
-    console.log(giftitOrderCount)
     if (giftitOrderCount >= 10) {
         document.querySelector('.giftit-text-fail-orders').classList.remove('hide')
         return
@@ -290,8 +289,12 @@ document.querySelector('form.giftit-form').addEventListener('submit', async (eve
         data[pair[0]] = pair[1];
     }
     data.shop = Shopify.shop
-    data.phone = intlTel.getNumber()
-    //TODO: Change the address with new site
+    try {
+        data.phone = intlTel.getNumber()
+    }
+    catch {
+        data.phone = document.querySelector('#giftit-recipient-phone-number').value
+    }
     const res = await fetch('https://giftit-app.herokuapp.com/gift-checkout', {
         method: 'POST',
         mode: 'cors',
@@ -320,7 +323,6 @@ document.querySelector('form.giftit-form').addEventListener('submit', async (eve
         successRef.children[0].style.animationPlayState = 'running'
         successRef.children[1].style.animationPlayState = 'running'
         document.querySelector('.giftit-text-success').classList.remove('hide')
-
         // update cookie on successful order
         // TODO: Include actual order number instead
         document.cookie = `giftIt_order_${giftitOrderCount}=1; expires=${new Date((new Date().getTime() + 60 * 60 * 1000)).toUTCString()}; path=/`;

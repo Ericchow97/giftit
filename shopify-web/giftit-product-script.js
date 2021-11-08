@@ -13,7 +13,7 @@ let giftitRef;
 // get product form
 Array.prototype.forEach.call(document.querySelectorAll('form[action="/cart/add"]'), (e) => {
     const button = e.querySelector('button')
-    if (button) {giftitRef = e}
+    if (button) { giftitRef = e }
 })
 
 if (giftitRef) {
@@ -568,8 +568,12 @@ if (giftitRef) {
             data[pair[0]] = pair[1];
         }
         data.shop = Shopify.shop
-        data.phone = intlTel.getNumber()
-        //TODO: Change the address with new site
+        try {
+            data.phone = intlTel.getNumber()
+        }
+        catch {
+            data.phone = document.querySelector('#giftit-recipient-phone-number').value
+        }
         const res = await fetch('https://giftit-app.herokuapp.com/gift-checkout', {
             method: 'POST',
             mode: 'cors',
