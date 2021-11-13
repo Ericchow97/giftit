@@ -17,7 +17,7 @@ export function RECURRING_CREATE(url) {
                     price: { amount: 9.99, currencyCode: USD }
                 }
               }
-            }
+            },
             {
               plan: {
                   appRecurringPricingDetails: {
