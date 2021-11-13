@@ -320,6 +320,14 @@ export const createDraftInvoice = async (adminAccessToken: string, shop: string,
                                 }
                             }
                         }
+                        privateMetafields(namespace: "__giftit", first: 1){
+                            edges {
+                                node {
+                                    namespace
+                                    value
+                                }
+                            }
+                        }
                     }
                     userErrors {
                         field
@@ -349,6 +357,7 @@ export const createDraftInvoice = async (adminAccessToken: string, shop: string,
                 "X-Shopify-Access-Token": adminAccessToken
             }
         })
+        console.log(draftOrder.privateMetafields)
         return draftOrder;
     } catch (err) {
         return
