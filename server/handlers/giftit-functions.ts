@@ -320,6 +320,7 @@ export const createDraftInvoice = async (adminAccessToken: string, shop: string,
                                 }
                             }
                         }
+                        privateMetafield
                     }
                     userErrors {
                         field
@@ -349,6 +350,7 @@ export const createDraftInvoice = async (adminAccessToken: string, shop: string,
                 "X-Shopify-Access-Token": adminAccessToken
             }
         })
+        console.log(draftOrder.privateMetafield)
         return draftOrder;
     } catch (err) {
         return
@@ -608,7 +610,7 @@ export const updateCustomerAddress = async (accessToken: string, updateInformati
 export const addBackInventory = async (accessToken: string, orderInformation: any): Promise<string | void> => {
     try {
         // get the draftOrder information
-        const { data } = await axios.post(`https://${orderInformation.shop}/admin/api/2021-01/graphql.json`, {
+        const { data: { data: draftOrder } } = await axios.post(`https://${orderInformation.shop}/admin/api/2021-01/graphql.json`, {
             query: `query draftOrder($id: ID!) {
                 draftOrder(id: $id) {
                     id
@@ -630,9 +632,6 @@ export const addBackInventory = async (accessToken: string, orderInformation: an
                 "X-Shopify-Access-Token": accessToken
             }
         })
-        console.log(data)
-        console.log(data.data)
-        const draftOrder = data.data.draftOrder
         console.log(draftOrder)
         console.log(draftOrder.privateMetafields.edges[0])
         console.log(draftOrder.privateMetafields.edges[0].node)
