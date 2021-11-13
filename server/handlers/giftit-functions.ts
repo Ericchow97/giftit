@@ -612,7 +612,7 @@ export const addBackInventory = async (accessToken: string, orderInformation: an
             query: `query draftOrder($id: ID!) {
                 draftOrder(id: $id) {
                     id
-                    privateMetafields(namespace: "__giftit") {
+                    privateMetafields(namespace: "__giftit", first: 1) {
                         edges {
                             node {
                                 value
