@@ -612,8 +612,12 @@ export const addBackInventory = async (accessToken: string, orderInformation: an
             query: `query draftOrder($id: ID!) {
                 draftOrder(id: $id) {
                     id
-                    privateMetafield(namespace: "__giftit", key: "__incrementQuery") {
-                        value
+                    privateMetafield(namespace: "__giftit") {
+                        edges {
+                            node {
+                                value
+                            }
+                        }
                     }
                     invoiceUrl
                 }
@@ -626,10 +630,13 @@ export const addBackInventory = async (accessToken: string, orderInformation: an
                 "X-Shopify-Access-Token": accessToken
             }
         })
+        console.log(draftOrder)
+        console.log(draftOrder.privateMetafield.edges[0])
+        console.log(draftOrder.privateMetafield.edges[0].node)
         // mutate original draft order to add back inventory
         await axios.post(`https://${orderInformation.shop}/admin/api/2021-01/graphql.json`, {
             query: `mutation {
-                ${draftOrder.privateMetafield.value}
+                ${draftOrder.privateMetafield.edges[0].node.value}
             }`
         }, {
             headers: {
