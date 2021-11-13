@@ -357,7 +357,6 @@ export const createDraftInvoice = async (adminAccessToken: string, shop: string,
                 "X-Shopify-Access-Token": adminAccessToken
             }
         })
-        console.log(draftOrder.privateMetafields)
         return draftOrder;
     } catch (err) {
         return
@@ -635,7 +634,6 @@ export const addBackInventory = async (accessToken: string, orderInformation: an
                 "X-Shopify-Access-Token": accessToken
             }
         })
-        console.log(draftOrder)
         // mutate original draft order to add back inventory
         await axios.post(`https://${orderInformation.shop}/admin/api/2021-01/graphql.json`, {
             query: `mutation {
