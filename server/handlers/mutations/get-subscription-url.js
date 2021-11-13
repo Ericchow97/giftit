@@ -8,22 +8,13 @@ export function RECURRING_CREATE(url) {
       appSubscriptionCreate(
           name: "Basic Plan"
           returnUrl: "${url}"
-          trialDays: 30
-          test: null
+          test: true
           lineItems: [
             {
               plan: {
                 appRecurringPricingDetails: {
                     price: { amount: 9.99, currencyCode: USD }
                 }
-              }
-            },
-            {
-              plan: {
-                  appRecurringPricingDetails: {
-                      price: { amount: 99.99, currencyCode: USD }
-                      interval: ANNUAL
-                  }
               }
             }
           ]
