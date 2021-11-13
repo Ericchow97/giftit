@@ -416,7 +416,16 @@ export const sendEmailOrMessage = async (orderInformation: any, url: string, dra
         title: `Thank you ${orderInformation.purchaserName}! Your gift order has been placed!`,
         items: draftOrder.lineItems.edges,
         subtotalPrice: draftOrder.subtotalPrice,
-        customMessage: purchaserCustomMessage
+        customMessage: `<table class="module" role="module" data-type="text"
+        border="0" cellpadding="0" cellspacing="0" width="100%"
+        style="table-layout: fixed;">
+        <tr>
+            <td style="padding:25px 20px 25px 20px;line-height:20px;text-align:inherit;"
+                height="100%" valign="top" bgcolor="">
+                ${purchaserCustomMessage}
+            </td>
+        </tr>
+    </table>`
     }, {
         id: draftOrder.id,
         shop: orderInformation.shop
@@ -573,7 +582,7 @@ export const updateCustomerAddress = async (accessToken: string, updateInformati
         //TODO: Allow custom message
         const ret = await sendEmail(draftOrder.email, 'd-ea22e637a8a34f99ba10de39d8a946ab', {
             subject: 'Complete your purchase',
-            title:`${updateInformation.first_name.charAt(0).toUpperCase() + updateInformation.first_name.slice(1)} has updated their address!`,
+            title: `${updateInformation.first_name.charAt(0).toUpperCase() + updateInformation.first_name.slice(1)} has updated their address!`,
             items: draftOrder.lineItems.edges,
             subtotalPrice: draftOrder.subtotalPrice,
             shopCta: `<div align="center">
@@ -677,7 +686,7 @@ export const deleteOrders = async (accessToken: string, origin: any, order: Orde
     // send deleted email to purchaser
     ret = await sendEmail(order.purchaserEmail, 'd-6b3fb774c0cf492c8822ce96a58d6115', {
         subject: subject,
-        title:"The merchant has cancelled your order.",
+        title: "The merchant has cancelled your order.",
         customMessage: deleteMessage
     })
     return ret;
