@@ -411,8 +411,9 @@ export const sendEmailOrMessage = async (orderInformation: any, url: string, dra
 
     //TODO: update from email to actual email
     // send email to purchaser confirming order has been placed
-    let ret = await sendEmail(orderInformation.purchaserEmail, 'd-db5fc81d6e7141b2b9de0c2620b9e37a', {
+    let ret = await sendEmail(orderInformation.purchaserEmail, 'd-ea22e637a8a34f99ba10de39d8a946ab', {
         subject: 'You sent a gift!',
+        title: `Thank you ${orderInformation.purchaserName}! Your gift order has been placed!`,
         items: draftOrder.lineItems.edges,
         subtotalPrice: draftOrder.subtotalPrice,
         customMessage: purchaserCustomMessage
@@ -570,8 +571,9 @@ export const updateCustomerAddress = async (accessToken: string, updateInformati
             }
         })
         //TODO: Allow custom message
-        const ret = await sendEmail(draftOrder.email, 'd-db5fc81d6e7141b2b9de0c2620b9e37a', {
+        const ret = await sendEmail(draftOrder.email, 'd-ea22e637a8a34f99ba10de39d8a946ab', {
             subject: 'Complete your purchase',
+            title:`${updateInformation.first_name.charAt(0).toUpperCase() + updateInformation.first_name.slice(1)} has updated their address!`,
             items: draftOrder.lineItems.edges,
             subtotalPrice: draftOrder.subtotalPrice,
             shopCta: `<div align="center">
@@ -675,9 +677,9 @@ export const deleteOrders = async (accessToken: string, origin: any, order: Orde
     // send deleted email to purchaser
     ret = await sendEmail(order.purchaserEmail, 'd-6b3fb774c0cf492c8822ce96a58d6115', {
         subject: subject,
+        title:"The merchant has cancelled your order.",
         customMessage: deleteMessage
     })
-
     return ret;
 }
 
