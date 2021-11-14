@@ -588,7 +588,7 @@ export const updateCustomerAddress = async (accessToken: string, updateInformati
             }
         })
         //TODO: Allow custom message
-        const ret = await sendEmail(draftOrder.email, 'd-ea22e637a8a34f99ba10de39d8a946ab', {
+        const ret = await sendEmail(draftOrder.email, 'd-a79538a838cf4026b327163c5e01adf4', {
             subject: 'Complete your purchase',
             title: `${updateInformation.first_name.charAt(0).toUpperCase() + updateInformation.first_name.slice(1)} has updated their address!`,
             items: draftOrder.lineItems.edges,
