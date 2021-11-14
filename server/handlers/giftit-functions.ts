@@ -421,7 +421,7 @@ export const sendEmailOrMessage = async (orderInformation: any, url: string, dra
     // send email to purchaser confirming order has been placed
     let ret = await sendEmail(orderInformation.purchaserEmail, 'd-ea22e637a8a34f99ba10de39d8a946ab', {
         subject: 'You sent a gift!',
-        title: `Thank you ${orderInformation.purchaserName}! Your gift order has been placed!`,
+        title: `Thank you, ${orderInformation.purchaserName}! Your gift order has been placed!`,
         items: draftOrder.lineItems.edges,
         subtotalPrice: draftOrder.subtotalPrice,
         customMessage: `<table class="module" role="module" data-type="text"
