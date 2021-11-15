@@ -389,7 +389,7 @@ export const sendEmail = async (to: string, templateId: string, dynamicTemplateD
     try {
         await sgMail.send({
             to: to,
-            from: 'eric.chow800@gmail.com',
+            from: 'admin@giftitnow.io',
             templateId: templateId,
             dynamicTemplateData: dynamicTemplateData,
             ...(customArgs && {
@@ -791,7 +791,7 @@ export const sendCustomerInfoEmail = async (customerId: string, csv: string, sho
     try {
         await sgMail.send({
             to: shopInfo.storeEmail,
-            from: 'eric.chow800@gmail.com',
+            from: 'admin@giftitnow.io',
             subject: `GiftIt Customer Information on Customer ${customerId}`,
             text: `Hello ${shopInfo.storeName},
 

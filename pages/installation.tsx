@@ -46,7 +46,7 @@ export const InstallationGuide = ({ appName }: IProps) => {
             4. Click Save and you're done! <br /> <br />
             <b>Happy Selling!</b><br /><br />
           </p>
-          <Caption>Have a question? Please send an email to: eric.chow803@gmail.com</Caption>
+          <Caption>Have a question? Please send an email to: support@giftitnow.io</Caption>
         </Card>
       </Page>
     </>
