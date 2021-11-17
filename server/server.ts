@@ -740,7 +740,12 @@ app.prepare().then(async () => {
 
   /**** WEBHOOKS ****/
   router.post("/webhooks", async (ctx: Koa.Context) => {
-    console.log(ctx.req)
+    console.log(ctx.path)
+    console.log(ctx.url)
+    console.log(ctx.originalUrl)
+    console.log(ctx.origin)
+    console.log(ctx.href)
+
     console.log(Shopify.Webhooks.Registry.webhookRegistry)
     console.log('use webhook')
     try {
