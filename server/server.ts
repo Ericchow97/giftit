@@ -886,10 +886,13 @@ app.prepare().then(async () => {
   };
 
   router.post("/webhooks", async (ctx: Koa.Context) => {
+    console.log('use webhook')
     try {
       await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
       console.log(`Webhook processed, returned status code 200`);
     } catch (error) {
+      console.log('errors')
+      console.log(error)
       console.log(`Failed to process webhook: ${error}`);
     }
   });
