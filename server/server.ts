@@ -52,7 +52,6 @@ const parseJwt = (token: string): string => {
   return JSON.parse(jsonPayload).dest.replace(/https:\/\//, "");
 };
 
-// TODO: Test if the workflow works with a new domain
 
 // TODO: validate all input from the front end
 // TODO: encode key for database?
@@ -76,6 +75,74 @@ app.prepare().then(async () => {
     console.log(err)
   }
   const db = client.db(process.env.DB_NAME).collection<ShopCollection>('shopData');
+  //WEBHOOK HANDLER FUNCTIONS
+
+  const handleDraftOrdersWebhook = async (_topic: any, shop: any, _body: any) => {
+    // on order update, update DB
+    const orderInformation = JSON.parse(_body)
+    if (orderInformation.status === 'completed') {
+      // write to DB 
+      db.updateOne({ shop: shop, "orders.id": orderInformation.admin_graphql_api_id }, {
+        $set: { "orders.$.status": "Complete" }
+      });
+    }
+    return Promise.resolve()
+  }
+
+  const handleNameChangeWebhook = async (_topic: any, shop: any, _body: any) => {
+    // on order update, update DB
+    const shopChange = JSON.parse(_body)
+    // write to DB 
+    db.updateOne({ shop: shop }, {
+      $set: {
+        "storeName": shopChange.name,
+        "storeEmail": shopChange.email
+      }
+    });
+    return Promise.resolve()
+  }
+
+  const handleAppUninstallWebhook = async (_topic: any, shop: any, _body: any) => {
+    delete ACTIVE_SHOPIFY_SHOPS[shop]
+    // write to DB 
+    db.updateOne({ shop: shop }, {
+      $set: {
+        "active": false,
+        "subscribed.subscriptionStatus": false
+      }
+    });
+    return Promise.resolve()
+  }
+
+  const handleAppSubscriptionUpdateWebhook = async (_topic: any, shop: any, _body: any) => {
+    const chargeInformation = JSON.parse(_body).app_subscription
+    // write to DB 
+    if (chargeInformation.status === 'ACTIVE') {
+      db.updateOne({ shop: shop }, {
+        $set: {
+          "subscribed": {
+            subscriptionId: chargeInformation.admin_graphql_api_id,
+            subscriptionStatus: true
+          }
+        }
+      });
+    } else {
+      db.updateOne({ shop: shop, "subscribed.subscriptionId": chargeInformation.admin_graphql_api_id }, {
+        $set: {
+          "subscribed.subscriptionStatus": false
+        }
+      });
+    }
+    return Promise.resolve()
+  }
+
+  // Register webhook on the server
+  Shopify.Webhooks.Registry.webhookRegistry.push(
+    { path: "/webhooks", topic: "DRAFT_ORDERS_UPDATE", webhookHandler: handleDraftOrdersWebhook },
+    { path: "/webhooks", topic: "SHOP_UPDATE", webhookHandler: handleNameChangeWebhook },
+    { path: "/webhooks", topic: "APP_UNINSTALLED", webhookHandler: handleAppUninstallWebhook },
+    { path: "/webhooks", topic: "APP_SUBSCRIPTIONS_UPDATE", webhookHandler: handleAppSubscriptionUpdateWebhook },
+  );
 
   server.use(cors());
   server.keys = [Shopify.Context.API_SECRET_KEY];
@@ -130,17 +197,7 @@ app.prepare().then(async () => {
           accessToken,
           path: '/webhooks',
           topic: 'DRAFT_ORDERS_UPDATE',
-          webhookHandler: (_topic: any, shop: any, _body: any) => {
-            // on order update, update DB
-            const orderInformation = JSON.parse(_body)
-            if (orderInformation.status === 'completed') {
-              // write to DB 
-              db.updateOne({ shop: shop, "orders.id": orderInformation.admin_graphql_api_id }, {
-                $set: { "orders.$.status": "Complete" }
-              });
-            }
-            return Promise.resolve()
-          },
+          webhookHandler: handleDraftOrdersWebhook
         });
 
         // register webhook for when store name/email changes
@@ -149,18 +206,7 @@ app.prepare().then(async () => {
           accessToken,
           path: '/webhooks',
           topic: 'SHOP_UPDATE',
-          webhookHandler: (_topic: any, shop: any, _body: any) => {
-            // on order update, update DB
-            const shopChange = JSON.parse(_body)
-            // write to DB 
-            db.updateOne({ shop: shop }, {
-              $set: {
-                "storeName": shopChange.name,
-                "storeEmail": shopChange.email
-              }
-            });
-            return Promise.resolve()
-          },
+          webhookHandler: handleNameChangeWebhook,
         });
 
         const registration_uninstall = await Shopify.Webhooks.Registry.register({
@@ -168,17 +214,7 @@ app.prepare().then(async () => {
           accessToken,
           path: '/webhooks',
           topic: 'APP_UNINSTALLED',
-          webhookHandler: (_topic: any, shop: any, _body: any) => {
-            delete ACTIVE_SHOPIFY_SHOPS[shop]
-            // write to DB 
-            db.updateOne({ shop: shop }, {
-              $set: {
-                "active": false,
-                "subscribed.subscriptionStatus": false
-              }
-            });
-            return Promise.resolve()
-          },
+          webhookHandler: handleAppUninstallWebhook,
         });
 
         //TODO: test whether this removes
@@ -187,27 +223,7 @@ app.prepare().then(async () => {
           accessToken,
           path: '/webhooks',
           topic: 'APP_SUBSCRIPTIONS_UPDATE',
-          webhookHandler: (_topic: any, shop: any, _body: any) => {
-            const chargeInformation = JSON.parse(_body).app_subscription
-            // write to DB 
-            if (chargeInformation.status === 'ACTIVE') {
-              db.updateOne({ shop: shop }, {
-                $set: {
-                  "subscribed": {
-                    subscriptionId: chargeInformation.admin_graphql_api_id,
-                    subscriptionStatus: true
-                  }
-                }
-              });
-            } else {
-              db.updateOne({ shop: shop, "subscribed.subscriptionId": chargeInformation.admin_graphql_api_id }, {
-                $set: {
-                  "subscribed.subscriptionStatus": false
-                }
-              });
-            }
-            return Promise.resolve()
-          },
+          webhookHandler: handleAppSubscriptionUpdateWebhook,
         });
 
         if (registration_orders.success && registration_name.success && registration_uninstall.success && registration_charge_status.success) {
