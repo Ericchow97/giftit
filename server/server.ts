@@ -739,9 +739,16 @@ app.prepare().then(async () => {
   })
 
   /**** WEBHOOKS ****/
-  router.post('/webhooks', async (ctx: Koa.Context) => {
-    await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
-    console.log(`Webhook processed with status code 200`);
+  router.post("/webhooks", async (ctx: Koa.Context) => {
+    console.log('use webhook')
+    try {
+      await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
+      console.log(`Webhook processed, returned status code 200`);
+    } catch (error) {
+      console.log('errors')
+      console.log(error)
+      console.log(`Failed to process webhook: ${error}`);
+    }
   });
 
   /**** SENDGRID/TWILLIO WEBHOOKS ****/
@@ -884,18 +891,6 @@ app.prepare().then(async () => {
     ctx.respond = false;
     ctx.res.statusCode = 200;
   };
-
-  router.post("/webhooks", async (ctx: Koa.Context) => {
-    console.log('use webhook')
-    try {
-      await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
-      console.log(`Webhook processed, returned status code 200`);
-    } catch (error) {
-      console.log('errors')
-      console.log(error)
-      console.log(`Failed to process webhook: ${error}`);
-    }
-  });
 
   router.post(
     "/graphql",
