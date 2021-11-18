@@ -460,7 +460,7 @@ export const sendEmailOrMessage = async (orderInformation: any, url: string, dra
         // send text message
         await client.messages
             .create({
-                body: `${(orderInformation.message.trim() || '')} ${orderInformation.purchaserName} sent you a gift! \nClick here ${url}/pages/gift-orders?orderId=${encodeURIComponent(draftOrder.id)}&token=${orderInformation.token} to confirm the shipping address`,
+                body: `${orderInformation.purchaserName} sent you a gift! \n${(orderInformation.message.trim() || '')} \nClick here ${url}/pages/gift-orders?orderId=${encodeURIComponent(draftOrder.id)}&token=${orderInformation.token} to confirm the shipping address`,
                 from: '+16473715520',
                 to: `${orderInformation.phone}`
             })
