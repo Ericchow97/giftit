@@ -149,8 +149,9 @@ app.prepare().then(async () => {
   })
 
   await activeShops.forEach(shop => {
-    console.log(shop)
+    ACTIVE_SHOPIFY_SHOPS[shop.shop] = {scope: process.env.SCOPES}
   })
+  console.log(ACTIVE_SHOPIFY_SHOPS)
 
   server.use(cors());
   server.keys = [Shopify.Context.API_SECRET_KEY];
