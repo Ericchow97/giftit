@@ -144,6 +144,14 @@ app.prepare().then(async () => {
     { path: "/webhooks", topic: "APP_SUBSCRIPTIONS_UPDATE", webhookHandler: handleAppSubscriptionUpdateWebhook },
   );
 
+  const activeShops = db.find({active: true}, {
+    projection: {shop: 1}
+  })
+
+  await activeShops.forEach(shop => {
+    console.log(shop)
+  })
+
   server.use(cors());
   server.keys = [Shopify.Context.API_SECRET_KEY];
   server.use(
