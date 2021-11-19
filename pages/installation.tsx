@@ -39,6 +39,7 @@ export const InstallationGuide = ({ appName }: IProps) => {
         <MediaCard
           title="1. Go to your online store and customize the theme"
           description=""
+          portrait={true}
         >
           <img
             alt="GiftIt Installation Step 1"
@@ -54,6 +55,7 @@ export const InstallationGuide = ({ appName }: IProps) => {
         <MediaCard
           title="2. Head to your product page within the theme builder"
           description=""
+          portrait={true}
         >
           <img
             alt="GiftIt Installation Step 2"
@@ -69,6 +71,7 @@ export const InstallationGuide = ({ appName }: IProps) => {
         <MediaCard
           title='3. Add block "Gift Button" and choose where you want it displayed'
           description=""
+          portrait={true}
         >
           <img
             alt="GiftIt Installation Step 3"
@@ -84,6 +87,7 @@ export const InstallationGuide = ({ appName }: IProps) => {
         <MediaCard
           title="4. Click Save and you're done!"
           description=""
+          portrait={true}
         >
           <img
             alt="GiftIt Installation Step 1"
