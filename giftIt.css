@@ -44,3 +44,7 @@ form {
     height: 0;
     overflow: hidden;
 }
+
+.Polaris-MediaCard__ActionContainer.Polaris-MediaCard--portrait {
+    padding-top: 0;
+}

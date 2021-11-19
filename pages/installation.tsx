@@ -52,11 +52,11 @@ export const InstallationGuide = ({ appName }: IProps) => {
         <Card
           title="Installation Steps"
           sectioned
-          secondaryFooterActions={[
-            { content: showSteps ? "Hide" : "Show" },
-            { accessibilityLabel: showSteps ? "Hide" : "Show" },
-            { onAction: () => setShowSteps(state => !state) }
-          ]}
+          secondaryFooterActions={[{
+            content: showSteps ? "Hide" : "Show",
+            accessibilityLabel: showSteps ? "Hide" : "Show",
+            onAction: () => setShowSteps(state => !state)
+          }]}
         >
           <p>Don't like video? Check out the steps instead!</p>
         </Card>
