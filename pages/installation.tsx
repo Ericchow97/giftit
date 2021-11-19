@@ -2,6 +2,7 @@ import {
   Page,
   Card,
   Caption,
+  MediaCard,
   DisplayText,
   Icon,
   TextContainer,
@@ -30,17 +31,32 @@ interface IProps {
 }
 
 export const InstallationGuide = ({ appName }: IProps) => {
-  // TODO: update email when have domain
   return (
     <>
       <Page
-        title="Installation Instructions"
+        title={`${appName} Installation Instructions`}
       >
+        <MediaCard
+          title="1. Go to your online store and customize the theme"
+          description=""
+          size="small"
+        >
+          <img
+            alt=""
+            width="100%"
+            height="100%"
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'center',
+            }}
+            src="https://giftit-assets.s3.us-west-2.amazonaws.com/embedded-app/Step1_Trim.gif"
+          />
+        </MediaCard>
         <Card
-          title={`Install ${appName} Steps`}
+          title={`Install  Steps`}
           sectioned
         >
-          <p>1. Go to your online store and customize the theme <br />
+          <p> <br />
             2. Head to your product page within the customize theme builder <br />
             3. Add block "Gift Button" and choose where you want it displayed <br />
             4. Click Save and you're done! <br /> <br />
