@@ -1,23 +1,11 @@
 import {
   Page,
   Card,
-  Caption,
   MediaCard,
-  DisplayText,
-  Icon,
-  TextContainer,
-  TextStyle,
-  TextField,
-  Toast,
+  VideoThumbnail,
 } from '@shopify/polaris';
-import {
-  CircleTickMajor,
-  CircleCancelMajor,
-  ClipboardMinor,
-} from '@shopify/polaris-icons';
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
-import Banner from '../components/MyBanner'
 
 type Options = {
   key: number,
@@ -37,9 +25,24 @@ export const InstallationGuide = ({ appName }: IProps) => {
         title={`${appName} Installation Instructions`}
       >
         <MediaCard
+          portrait
+          title="Installation Video"
+          description="Have a question? Email us at: support@giftitnow.io"
+        >
+          <iframe
+            width="100%"
+            height="100%"
+            src="https://www.youtube.com/embed/HC15FrmnBXE"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="Embedded GiftIt Installation Youtube"
+          />
+        </MediaCard>
+        <MediaCard
           title="1. Go to your online store and customize the theme"
           description=""
-          portrait={true}
+          portrait
         >
           <img
             alt="GiftIt Installation Step 1"
@@ -55,7 +58,7 @@ export const InstallationGuide = ({ appName }: IProps) => {
         <MediaCard
           title="2. Head to your product page within the theme builder"
           description=""
-          portrait={true}
+          portrait
         >
           <img
             alt="GiftIt Installation Step 2"
@@ -71,7 +74,7 @@ export const InstallationGuide = ({ appName }: IProps) => {
         <MediaCard
           title='3. Add block "Gift Button" and choose where you want it displayed'
           description=""
-          portrait={true}
+          portrait
         >
           <img
             alt="GiftIt Installation Step 3"
@@ -87,7 +90,7 @@ export const InstallationGuide = ({ appName }: IProps) => {
         <MediaCard
           title="4. Click Save and you're done!"
           description=""
-          portrait={true}
+          portrait
         >
           <img
             alt="GiftIt Installation Step 1"
@@ -104,7 +107,7 @@ export const InstallationGuide = ({ appName }: IProps) => {
           title="Happy Selling!"
           sectioned
         >
-          <Caption>Have a question? Email us at: support@giftitnow.io</Caption>
+          <p>Have a question? Email us at: support@giftitnow.io</p>
         </Card>
       </Page>
     </>
