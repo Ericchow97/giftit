@@ -120,14 +120,14 @@ export const InstallationGuide = ({ appName }: IProps) => {
             portrait
           >
             <img
-              alt="GiftIt Installation Step 1"
+              alt="GiftIt Installation Step 4"
               width="100%"
               height="100%"
               style={{
                 objectFit: 'cover',
                 objectPosition: 'center',
               }}
-              src="https://giftit-assets.s3.us-west-2.amazonaws.com/embedded-app/Step1.gif"
+              src="https://giftit-assets.s3.us-west-2.amazonaws.com/embedded-app/Step4.gif"
             />
           </MediaCard>
           <Card
