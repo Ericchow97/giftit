@@ -75,8 +75,8 @@ app.prepare().then(async () => {
     console.log(err)
   }
   const db = client.db(process.env.DB_NAME).collection<ShopCollection>('shopData');
-  //WEBHOOK HANDLER FUNCTIONS
 
+  //WEBHOOK HANDLER FUNCTIONS
   const handleDraftOrdersWebhook = async (_topic: any, shop: any, _body: any) => {
     // on order update, update DB
     const orderInformation = JSON.parse(_body)

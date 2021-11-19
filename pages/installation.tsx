@@ -39,30 +39,68 @@ export const InstallationGuide = ({ appName }: IProps) => {
         <MediaCard
           title="1. Go to your online store and customize the theme"
           description=""
-          size="small"
         >
           <img
-            alt=""
+            alt="GiftIt Installation Step 1"
             width="100%"
             height="100%"
             style={{
               objectFit: 'cover',
               objectPosition: 'center',
             }}
-            src="https://giftit-assets.s3.us-west-2.amazonaws.com/embedded-app/Step1_Trim.gif"
+            src="https://giftit-assets.s3.us-west-2.amazonaws.com/embedded-app/Step1.gif"
+          />
+        </MediaCard>
+        <MediaCard
+          title="2. Head to your product page within the theme builder"
+          description=""
+        >
+          <img
+            alt="GiftIt Installation Step 2"
+            width="100%"
+            height="100%"
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'center',
+            }}
+            src="https://giftit-assets.s3.us-west-2.amazonaws.com/embedded-app/Step2.gif"
+          />
+        </MediaCard>
+        <MediaCard
+          title='3. Add block "Gift Button" and choose where you want it displayed'
+          description=""
+        >
+          <img
+            alt="GiftIt Installation Step 3"
+            width="100%"
+            height="100%"
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'center',
+            }}
+            src="https://giftit-assets.s3.us-west-2.amazonaws.com/embedded-app/Step3.gif"
+          />
+        </MediaCard>
+        <MediaCard
+          title="4. Click Save and you're done!"
+          description=""
+        >
+          <img
+            alt="GiftIt Installation Step 1"
+            width="100%"
+            height="100%"
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'center',
+            }}
+            src="https://giftit-assets.s3.us-west-2.amazonaws.com/embedded-app/Step1.gif"
           />
         </MediaCard>
         <Card
-          title={`Install  Steps`}
+          title="Happy Selling!"
           sectioned
         >
-          <p> <br />
-            2. Head to your product page within the customize theme builder <br />
-            3. Add block "Gift Button" and choose where you want it displayed <br />
-            4. Click Save and you're done! <br /> <br />
-            <b>Happy Selling!</b><br /><br />
-          </p>
-          <Caption>Have a question? Please send an email to: support@giftitnow.io</Caption>
+          <Caption>Have a question? Email us at: support@giftitnow.io</Caption>
         </Card>
       </Page>
     </>

@@ -36,3 +36,7 @@ form {
     width: 50%;
     text-align: center;
 }
+
+.Polaris-MediaCard__ActionContainer{
+    padding: 0;
+}
