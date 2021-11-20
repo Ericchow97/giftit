@@ -151,8 +151,8 @@ app.prepare().then(async () => {
   //TODO: Remove
   const dummy: any = []
 
-  activeShops.forEach(shop => {
-    ACTIVE_SHOPIFY_SHOPS[shop.shop] = { scope: process.env.SCOPES, accessToken: shop.accessToken }
+  await activeShops.forEach(shop => {
+    ACTIVE_SHOPIFY_SHOPS[shop.shop] = { scope: process.env.SCOPES }
     dummy.push({ shop: shop.shop, accessToken: shop.accessToken })
   })
 
