@@ -157,16 +157,17 @@ app.prepare().then(async () => {
   })
 
   console.log(dummy)
+  // for (let i = 0; i < dummy.length)
   try {
-    const data = await axios.get(`https://${dummy[0].shop}/admin/api/2021-10/script_tags.json`, {
+    const {data: {script_tags}} = await axios.get(`https://${dummy[0].shop}/admin/api/2021-10/script_tags.json`, {
       headers: {
         "X-Shopify-Access-Token": dummy[0].accessToken
       }
     })
-    console.log(data)
+    console.log(script_tags)
   }
   catch {
-
+    console.log('error')
   }
   //TODO: Remove
   // Promise.all(dummy.map((shop: any) => {
