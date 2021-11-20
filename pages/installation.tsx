@@ -27,6 +27,12 @@ export const InstallationGuide = ({ appName }: IProps) => {
       <Page
         title={`${appName} Installation Instructions`}
       >
+        <Card
+          title="Testing Dev"
+          sectioned
+        >
+          <p>Test!</p>
+        </Card>
         <MediaCard
           portrait
           title="Installation Video"
