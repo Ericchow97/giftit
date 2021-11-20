@@ -25,10 +25,11 @@ import {
       purchaserCustomMessage: string,
       deleteCustomMessage: string,
       recipientReminderMessage: string,
-    }
+    },
+    host: string
   }
   
-  const Configuration = ({ configuration }: IProps) => {
+  const Configuration = ({ configuration, host }: IProps) => {
     // custom messages
     const [purchaserCustomMessage, setPurchaserCustomMessage] = useState(configuration.purchaserCustomMessage)
     const [deleteCustomMessage, setDeleteCustomMessage] = useState(configuration.deleteCustomMessage)
@@ -78,7 +79,7 @@ import {
       }
       const sessionToken = await getSessionToken(app);
       // update site configuration
-      const ret = await (await fetch(`https://giftit-app.herokuapp.com/update-configuration`, {
+      const ret = await (await fetch(`${host}/update-configuration`, {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -215,7 +216,8 @@ import {
   }
   
   Configuration.propTypes = {
-    configuration: PropTypes.object.isRequired
+    configuration: PropTypes.object.isRequired,
+    host: PropTypes.string.isRequired
   }
   
   export default Configuration;

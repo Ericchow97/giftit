@@ -20,7 +20,8 @@ import {Redirect} from '@shopify/app-bridge/actions';
 const img = 'https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg';
 
 interface IProps {
-  appName: string;
+  appName: string,
+  host: string,
   orders: {
     id: string,
     name: string,
@@ -48,7 +49,7 @@ const Index = (props: IProps) => {
     const getOrderPrices = async (totalPrice: number) => {
       const sessionToken = await getSessionToken(shopifyApp);
       try {
-        const currencyCode = await (await fetch(`https://giftit-app.herokuapp.com/graphql`, {
+        const currencyCode = await (await fetch(`${props.host}/graphql`, {
           method: 'POST',
           mode: 'cors',
           headers: {
@@ -192,6 +193,7 @@ const Index = (props: IProps) => {
 Index.propTypes = {
   appName: PropTypes.string.isRequired,
   orders: PropTypes.array.isRequired,
+  host: PropTypes.string.isRequired,
 }
 
 export default Index;
