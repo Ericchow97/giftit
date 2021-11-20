@@ -148,15 +148,22 @@ app.prepare().then(async () => {
     projection: { shop: 1, accessToken: 1 }
 
   })
-  console.log(activeShops)
-  await activeShops.forEach(shop => {
-    ACTIVE_SHOPIFY_SHOPS[shop.shop] = { scope: process.env.SCOPES }
-    // console.log(await axios.get(`https://${shop.shop}/admin/api/2021-04/script_tags.json?src=${process.env.NPM_CONFIG_PRODUCTION}/giftit-script`, {
-    //   headers: {
-    //     "X-Shopify-Access-Token": shop.accessToken
-    //   }
-    // }))
+  //TODO: Remove
+  const dummy: any = []
+
+  activeShops.forEach(shop => {
+    ACTIVE_SHOPIFY_SHOPS[shop.shop] = { scope: process.env.SCOPES, accessToken: shop.accessToken }
+    dummy.push({ shop: shop.shop, accessToken: shop.accessToken })
   })
+
+  //TODO: Remove
+  Promise.all(dummy.map((shop: any) => {
+    console.log(axios.get(`https://${shop.shop}/admin/api/2021-04/script_tags.json?src=${process.env.NPM_CONFIG_PRODUCTION}/giftit-script`, {
+      headers: {
+        "X-Shopify-Access-Token": shop.accessToken
+      }
+    }))
+  }))
 
   server.use(cors());
   server.keys = [Shopify.Context.API_SECRET_KEY];
