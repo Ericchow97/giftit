@@ -63,7 +63,6 @@ function MyProvider(props) {
 const MyApp = ({ Component, shopOrigin, pageProps, host, redirect }) => {
   const [props] = useState(pageProps)
   console.log(process.env.HOST)
-  console.log(HOST)
   const config = { apiKey: process.env.API_KEY, shopOrigin, host, forceRedirect: true };
   return (
     <>
