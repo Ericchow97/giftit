@@ -10,6 +10,7 @@ import Router from "koa-router";
 import koaBody from 'koa-body';
 import cors from '@koa/cors';
 import axios from 'axios';
+import atob from 'atob';
 import btoa from 'btoa';
 import isVerified from 'shopify-jwt-auth-verify'
 
@@ -17,6 +18,7 @@ import { ShopCollection, Order, CustomError } from '../types';
 import { createClient, getSubscriptionUrl, giftitFunctions } from './handlers/index'
 
 import fs from 'fs'
+import path from 'path'
 
 // Database Imports 
 import { MongoClient } from 'mongodb';
@@ -50,7 +52,6 @@ const parseJwt = (token: string): string => {
   return JSON.parse(jsonPayload).dest.replace(/https:\/\//, "");
 };
 
-// TODO: Test if the workflow works with a new domain
 
 // TODO: validate all input from the front end
 // TODO: encode key for database?
@@ -65,6 +66,7 @@ app.prepare().then(async () => {
   // TODO: update mongodb IP access list to wherever code is stored 
   // TODO: update database to actual database on launch
   // TODO: Look into logging and monitoring https://docs.mongodb.com/drivers/node/fundamentals/indexes
+
   const client = new MongoClient(uri);
   try {
     await client.connect();
@@ -74,7 +76,81 @@ app.prepare().then(async () => {
   }
   const db = client.db(process.env.DB_NAME).collection<ShopCollection>('shopData');
 
+  //WEBHOOK HANDLER FUNCTIONS
+  const handleDraftOrdersWebhook = async (_topic: any, shop: any, _body: any) => {
+    // on order update, update DB
+    const orderInformation = JSON.parse(_body)
+    if (orderInformation.status === 'completed') {
+      // write to DB 
+      db.updateOne({ shop: shop, "orders.id": orderInformation.admin_graphql_api_id }, {
+        $set: { "orders.$.status": "Complete" }
+      });
+    }
+    return Promise.resolve()
+  }
 
+  const handleNameChangeWebhook = async (_topic: any, shop: any, _body: any) => {
+    // on order update, update DB
+    const shopChange = JSON.parse(_body)
+    // write to DB 
+    db.updateOne({ shop: shop }, {
+      $set: {
+        "storeName": shopChange.name,
+        "storeEmail": shopChange.email
+      }
+    });
+    return Promise.resolve()
+  }
+
+  const handleAppUninstallWebhook = async (_topic: any, shop: any, _body: any) => {
+    delete ACTIVE_SHOPIFY_SHOPS[shop]
+    // write to DB 
+    db.updateOne({ shop: shop }, {
+      $set: {
+        "active": false,
+        "subscribed.subscriptionStatus": false
+      }
+    });
+    return Promise.resolve()
+  }
+
+  const handleAppSubscriptionUpdateWebhook = async (_topic: any, shop: any, _body: any) => {
+    const chargeInformation = JSON.parse(_body).app_subscription
+    // write to DB 
+    if (chargeInformation.status === 'ACTIVE') {
+      db.updateOne({ shop: shop }, {
+        $set: {
+          "subscribed": {
+            subscriptionId: chargeInformation.admin_graphql_api_id,
+            subscriptionStatus: true
+          }
+        }
+      });
+    } else {
+      db.updateOne({ shop: shop, "subscribed.subscriptionId": chargeInformation.admin_graphql_api_id }, {
+        $set: {
+          "subscribed.subscriptionStatus": false
+        }
+      });
+    }
+    return Promise.resolve()
+  }
+
+  // Register webhook on the server
+  Shopify.Webhooks.Registry.webhookRegistry.push(
+    { path: "/webhooks", topic: "DRAFT_ORDERS_UPDATE", webhookHandler: handleDraftOrdersWebhook },
+    { path: "/webhooks", topic: "SHOP_UPDATE", webhookHandler: handleNameChangeWebhook },
+    { path: "/webhooks", topic: "APP_UNINSTALLED", webhookHandler: handleAppUninstallWebhook },
+    { path: "/webhooks", topic: "APP_SUBSCRIPTIONS_UPDATE", webhookHandler: handleAppSubscriptionUpdateWebhook },
+  );
+
+  const activeShops = db.find({active: true}, {
+    projection: {shop: 1}
+  })
+
+  await activeShops.forEach(shop => {
+    ACTIVE_SHOPIFY_SHOPS[shop.shop] = {scope: process.env.SCOPES}
+  })
 
   server.use(cors());
   server.keys = [Shopify.Context.API_SECRET_KEY];
@@ -103,7 +179,7 @@ app.prepare().then(async () => {
               orders: { $cond: [{ $not: ["$orders"] }, [], "$orders"] },
               storeName: data.shop.name,
               storeEmail: data.shop.email,
-              origin: '',
+              origin: { $cond: [{ $not: ["$origin"] }, '', "$origin"] },
               configuration: {
                 $cond: [{ $not: ["$configuration"] },
                 {
@@ -129,17 +205,7 @@ app.prepare().then(async () => {
           accessToken,
           path: '/webhooks',
           topic: 'DRAFT_ORDERS_UPDATE',
-          webhookHandler: (_topic: any, shop: any, _body: any) => {
-            // on order update, update DB
-            const orderInformation = JSON.parse(_body)
-            if (orderInformation.status === 'completed') {
-              // write to DB 
-              db.updateOne({ shop: shop, "orders.id": orderInformation.admin_graphql_api_id }, {
-                $set: { "orders.$.status": "Complete" }
-              });
-            }
-            return Promise.resolve()
-          },
+          webhookHandler: handleDraftOrdersWebhook
         });
 
         // register webhook for when store name/email changes
@@ -148,18 +214,7 @@ app.prepare().then(async () => {
           accessToken,
           path: '/webhooks',
           topic: 'SHOP_UPDATE',
-          webhookHandler: (_topic: any, shop: any, _body: any) => {
-            // on order update, update DB
-            const shopChange = JSON.parse(_body)
-            // write to DB 
-            db.updateOne({ shop: shop }, {
-              $set: {
-                "storeName": shopChange.name,
-                "storeEmail": shopChange.email
-              }
-            });
-            return Promise.resolve()
-          },
+          webhookHandler: handleNameChangeWebhook,
         });
 
         const registration_uninstall = await Shopify.Webhooks.Registry.register({
@@ -167,17 +222,7 @@ app.prepare().then(async () => {
           accessToken,
           path: '/webhooks',
           topic: 'APP_UNINSTALLED',
-          webhookHandler: (_topic: any, shop: any, _body: any) => {
-            delete ACTIVE_SHOPIFY_SHOPS[shop]
-            // write to DB 
-            db.updateOne({ shop: shop }, {
-              $set: {
-                "active": false,
-                "subscribed.subscriptionStatus": false
-              }
-            });
-            return Promise.resolve()
-          },
+          webhookHandler: handleAppUninstallWebhook,
         });
 
         //TODO: test whether this removes
@@ -186,38 +231,18 @@ app.prepare().then(async () => {
           accessToken,
           path: '/webhooks',
           topic: 'APP_SUBSCRIPTIONS_UPDATE',
-          webhookHandler: (_topic: any, shop: any, _body: any) => {
-            const chargeInformation = JSON.parse(_body).app_subscription
-            // write to DB 
-            if (chargeInformation.status === 'ACTIVE') {
-              db.updateOne({ shop: shop }, {
-                $set: {
-                  "subscribed": {
-                    subscriptionId: chargeInformation.admin_graphql_api_id,
-                    subscriptionStatus: true
-                  }
-                }
-              });
-            } else {
-              db.updateOne({ shop: shop, "subscribed.subscriptionId": chargeInformation.admin_graphql_api_id }, {
-                $set: {
-                  "subscribed.subscriptionStatus": false
-                }
-              });
-            }
-            return Promise.resolve()
-          },
+          webhookHandler: handleAppSubscriptionUpdateWebhook,
         });
 
         if (registration_orders.success && registration_name.success && registration_uninstall.success && registration_charge_status.success) {
           console.log('Successfully registered webhook!');
         } else {
           console.log('Failed to register webhook', registration_orders.result, registration_name.result, registration_uninstall.result, registration_charge_status.result);
+          return
         }
         // Redirect to app with shop parameter upon auth
         //TODO: TEST if delete, will be able to access data again?
         //TODO: test, can follow same charge cycle?
-
         ctx.client = createClient(shop, accessToken)
         ctx.redirect(await getSubscriptionUrl(ctx, ctx.state.shopify.shop, ctx.query.host))
       },
@@ -358,7 +383,7 @@ app.prepare().then(async () => {
         // TODO: see if inventory item was released from hold for all deleteOrders calls
         // remove orders in database
         const { value } = await db.findOneAndUpdate({ shop: dest }, {
-          $pull: { "orders": { "id": { '$in': idList } } } && undefined
+          $pull: { "orders": { "id": { '$in': idList } } }
         });
         const { accessToken, configuration } = value || {}
 
@@ -464,6 +489,7 @@ app.prepare().then(async () => {
     const orderInformation = ctx.request.body;
     const shop = orderInformation.shop;
     const origin = <string>ctx.request.header.origin;
+    console.log(shop)
     // generate random token
     orderInformation.token = Math.random().toString(36).substr(2, 10);
     orderInformation.purchaserName = orderInformation.purchaserName.toLowerCase().split(' ').map((word: string) => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
@@ -677,34 +703,32 @@ app.prepare().then(async () => {
     }
   })
 
-  //TODO: remove when have actual server?
   /**** STATIC FILES ****/
-
   /**
    * Endpoint to serve script
    */
-  router.get('/giftit-script', koaBody(), async (ctx: Koa.Context) => {
-    try {
-      ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-product-script.js', "utf8");
-    } catch (error) {
-      if ((error as CustomError).type) {
-        const err = error as CustomError
-        console.log(error)
-        ctx.status = 500;
-        ctx.body = {
-          type: err.type,
-          message: err.message
-        };
-      }
-    }
-  })
+  // router.get('/giftit-script', koaBody(), async (ctx: Koa.Context) => {
+  //   try {
+  //     ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-product-script.js', "utf8");
+  //   } catch (error) {
+  //     if ((error as CustomError).type) {
+  //       const err = error as CustomError
+  //       console.log(error)
+  //       ctx.status = 500;
+  //       ctx.body = {
+  //         type: err.type,
+  //         message: err.message
+  //       };
+  //     }
+  //   }
+  // })
 
   /**
    * Endpoint to serve css
    */
   router.get('/giftit-css', koaBody(), async (ctx: Koa.Context) => {
     try {
-      ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-styles.css', "utf8");
+      ctx.body = fs.readFileSync(path.join(__dirname, '..', 'shopify-web', 'giftit-styles.css'), "utf8");
       ctx.type = "text/css";
     } catch (error) {
       if ((error as CustomError).type) {
@@ -724,7 +748,7 @@ app.prepare().then(async () => {
    */
   router.get('/privacy-policy', koaBody(), async (ctx: Koa.Context) => {
     try {
-      ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-privacy-policy.html', "utf8");
+      ctx.body = fs.readFileSync(path.join(__dirname, '..', 'shopify-web', 'giftit-privacy-policy.html'), "utf8");
     } catch (error) {
       if ((error as CustomError).type) {
         const err = error as CustomError
@@ -739,9 +763,14 @@ app.prepare().then(async () => {
   })
 
   /**** WEBHOOKS ****/
-  router.post('/webhooks', async (ctx: Koa.Context) => {
-    await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
-    console.log(`Webhook processed with status code 200`);
+  router.post("/webhooks", async (ctx: Koa.Context) => {
+    try {
+      await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
+      console.log(`Webhook processed, returned status code 200`);
+    } catch (error) {
+      console.log(error)
+      console.log(`Failed to process webhook: ${error}`);
+    }
   });
 
   /**** SENDGRID/TWILLIO WEBHOOKS ****/
@@ -884,15 +913,6 @@ app.prepare().then(async () => {
     ctx.respond = false;
     ctx.res.statusCode = 200;
   };
-
-  router.post("/webhooks", async (ctx: Koa.Context) => {
-    try {
-      await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
-      console.log(`Webhook processed, returned status code 200`);
-    } catch (error) {
-      console.log(`Failed to process webhook: ${error}`);
-    }
-  });
 
   router.post(
     "/graphql",

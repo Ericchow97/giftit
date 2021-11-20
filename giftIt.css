@@ -14,7 +14,7 @@ form {
     width: 100%;
 }
 
-.Dashboard-Text{
+.Dashboard-Text {
     font-size: 2.1rem;
     font-weight: 400;
     line-height: 2.8rem;
@@ -30,4 +30,21 @@ form {
 
 .frappe-chart .chart {
     width: 100%;
+}
+
+.Polaris-EmptyState__ImageContainer {
+    width: 50%;
+    text-align: center;
+}
+
+.giftit-youtube-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    padding-top: 30px;
+    height: 0;
+    overflow: hidden;
+}
+
+.Polaris-MediaCard__ActionContainer.Polaris-MediaCard--portrait {
+    padding-top: 0;
 }

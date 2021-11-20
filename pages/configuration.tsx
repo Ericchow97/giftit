@@ -78,7 +78,7 @@ import {
       }
       const sessionToken = await getSessionToken(app);
       // update site configuration
-      const ret = await (await fetch(`https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.io/update-configuration`, {
+      const ret = await (await fetch(`https://giftit-app.herokuapp.com/update-configuration`, {
         method: 'POST',
         mode: 'cors',
         headers: {

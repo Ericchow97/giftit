@@ -60,7 +60,7 @@ export const InstallationGuide = ({ appName, themes }: IProps) => {
     const updateList = [...installationProgress]
 
     // Add themes
-    const ret = await (await fetch(`https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.io/add-themes`, {
+    const ret = await (await fetch(`https://giftit-app.herokuapp.com/add-themes`, {
       method: 'POST',
       mode: 'cors',
       headers: {

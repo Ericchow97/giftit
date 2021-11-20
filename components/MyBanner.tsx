@@ -34,7 +34,7 @@ export const MyBanner = ({ title, status, toggleBanner, disableHelp = false }: I
                 })}
                 onDismiss={() => toggleBanner(false)}
             />
-            <input readOnly style={{ display: 'none' }} type='text' id='contactAddress' value='eric.chow803@gmail.com' />
+            <input readOnly style={{ display: 'none' }} type='text' id='contactAddress' value='support@giftitnow.io' />
             {toastActive && <Toast content="Successfully Copied Email" onDismiss={() => setToastActive(false)} />}
         </div>
     )

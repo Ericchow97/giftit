@@ -8,23 +8,15 @@ export function RECURRING_CREATE(url) {
       appSubscriptionCreate(
           name: "Basic Plan"
           returnUrl: "${url}"
-          test: true
+          trialDays: 30
           lineItems: [
-          {
-            plan: {
-              appUsagePricingDetails: {
-                  cappedAmount: { amount: 10, currencyCode: USD }
-                  terms: "$1 for 1000 emails"
+            {
+              plan: {
+                appRecurringPricingDetails: {
+                    price: { amount: 9.99, currencyCode: USD }
+                }
               }
             }
-          }
-          {
-            plan: {
-              appRecurringPricingDetails: {
-                  price: { amount: 10, currencyCode: USD }
-              }
-            }
-          }
           ]
         ) {
             userErrors {

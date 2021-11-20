@@ -15,6 +15,7 @@ import LearnMore from '../components/LearnMore'
 
 import { useAppBridge } from '@shopify/app-bridge-react';
 import { getSessionToken } from "@shopify/app-bridge-utils";
+import {Redirect} from '@shopify/app-bridge/actions';
 
 const img = 'https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg';
 
@@ -46,29 +47,33 @@ const Index = (props: IProps) => {
   useEffect(() => {
     const getOrderPrices = async (totalPrice: number) => {
       const sessionToken = await getSessionToken(shopifyApp);
-      const currencyCode = await (await fetch(`https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.iographql`, {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-          'Authorization': sessionToken
-        },
-        body: `
+      try {
+        const currencyCode = await (await fetch(`https://giftit-app.herokuapp.com/graphql`, {
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'Authorization': sessionToken
+          },
+          body: `
               query GetCurrency {
                 shop {
                   currencyCode
                 }
               }
             `
-      })).text()
-      setTotalOrderPrice(`${currencyCode} ${totalPrice.toFixed(2)}`);
-      setAverageOrderPrice(`${currencyCode} ${(totalPrice / props.orders.length).toFixed(2)}`);
+        })).text()
+        setTotalOrderPrice(`${currencyCode} ${totalPrice.toFixed(2)}`);
+        setAverageOrderPrice(`${currencyCode} ${(totalPrice / props.orders.length).toFixed(2)}`);
+      } catch (err) {
+        console.log(err)
+      }
     }
     if (props.orders.length) {
       let outstanding = 0
       let completed = 0
       let totalPrice = 0
       const today = new Date()
-      const referenceDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      const referenceDate = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
       const minDate = new Date(today.getFullYear(), today.getMonth() - 2, 1);
       const monthlyCount = [0, 0, 0]
       const monthlyAmountTotal = [0, 0, 0]
@@ -77,6 +82,8 @@ const Index = (props: IProps) => {
         props.orders[i].status === 'Complete' ? completed++ : outstanding++;
         totalPrice += +props.orders[i].price
         const orderDate = new Date(props.orders[i].createdAt)
+        console.log(orderDate)
+        console.log(orderDate >= minDate && orderDate <= referenceDate)
         if (orderDate >= minDate && orderDate <= referenceDate) {
           const index = (minDate.getFullYear() - orderDate.getFullYear()) * 12 + orderDate.getMonth() - minDate.getMonth();
           monthlyCount[index] += 1
@@ -153,20 +160,28 @@ const Index = (props: IProps) => {
           </>
         ) : (
           <>
-              <EmptyState
-                heading="It seems like you have no gift orders yet"
-                secondaryAction={{
-                  content: 'Learn more',
-                  accessibilityLabel: 'Learn more',
-                  onAction: () => setModalActive(!modalActive),
-                }}
-                image={img}
-              >
-              </EmptyState>
-              <LearnMore
-                active={modalActive}
-                setActive={setModalActive}
-              />
+            <EmptyState
+              heading="It seems like you have no gift orders yet"
+              action={{
+                content: 'Install Now',
+                accessibilityLabel: 'Install Now',
+                onAction: () => {
+                  const redirect = Redirect.create(shopifyApp)
+                  redirect.dispatch(Redirect.Action.APP, '/installation');
+                }
+              }}
+              secondaryAction={{
+                content: 'Learn more',
+                accessibilityLabel: 'Learn more',
+                onAction: () => setModalActive(!modalActive),
+              }}
+              image={img}
+            >
+            </EmptyState>
+            <LearnMore
+              active={modalActive}
+              setActive={setModalActive}
+            />
           </>
         )}
       </Layout>

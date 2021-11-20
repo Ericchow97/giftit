@@ -1,22 +1,12 @@
 import {
   Page,
   Card,
-  Caption,
-  DisplayText,
-  Icon,
-  TextContainer,
-  TextStyle,
-  TextField,
-  Toast,
+  MediaCard,
+  Button,
+  Collapsible,
 } from '@shopify/polaris';
-import {
-  CircleTickMajor,
-  CircleCancelMajor,
-  ClipboardMinor,
-} from '@shopify/polaris-icons';
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
-import Banner from '../components/MyBanner'
 
 type Options = {
   key: number,
@@ -30,24 +20,123 @@ interface IProps {
 }
 
 export const InstallationGuide = ({ appName }: IProps) => {
-  // TODO: update email when have domain
+  const [showSteps, setShowSteps] = useState(false)
+
   return (
     <>
       <Page
-        title="Installation Instructions"
+        title={`${appName} Installation Instructions`}
       >
-        <Card
-          title={`Install ${appName} Steps`}
-          sectioned
+        <MediaCard
+          portrait
+          title="Installation Video"
+          description="Have a question? Email us at: support@giftitnow.io"
         >
-          <p>1. Go to your online store and customize the theme <br />
-            2. Head to your product page within the customize theme builder <br />
-            3. Add block "Gift Button" and choose where you want it displayed <br />
-            4. Click Save and you're done! <br /> <br />
-            <b>Happy Selling!</b><br /><br />
-          </p>
-          <Caption>Have a question? Please send an email to: eric.chow803@gmail.com</Caption>
+          <div className="giftit-youtube-container">
+            <iframe
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%'
+              }}
+              src="https://www.youtube.com/embed/HC15FrmnBXE"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title="Embedded GiftIt Installation Youtube"
+            />
+          </div>
+        </MediaCard>
+        <Card
+          title="Installation Steps"
+          sectioned
+          secondaryFooterActions={[{
+            content: showSteps ? "Hide" : "Show",
+            accessibilityLabel: showSteps ? "Hide" : "Show",
+            onAction: () => setShowSteps(state => !state)
+          }]}
+        >
+          <p>Don't like video? Check out the steps instead!</p>
         </Card>
+        <Collapsible
+          open={showSteps}
+          id="steps-collapsible"
+          transition={{ duration: '500ms', timingFunction: 'ease-in-out' }}
+          expandOnPrint
+        >
+          <MediaCard
+            title="1. Go to your online store and customize the theme"
+            description=""
+            portrait
+          >
+            <img
+              alt="GiftIt Installation Step 1"
+              width="100%"
+              height="100%"
+              style={{
+                objectFit: 'cover',
+                objectPosition: 'center',
+              }}
+              src="https://giftit-assets.s3.us-west-2.amazonaws.com/embedded-app/Step1.gif"
+            />
+          </MediaCard>
+          <MediaCard
+            title="2. Head to your product page within the theme builder"
+            description=""
+            portrait
+          >
+            <img
+              alt="GiftIt Installation Step 2"
+              width="100%"
+              height="100%"
+              style={{
+                objectFit: 'cover',
+                objectPosition: 'center',
+              }}
+              src="https://giftit-assets.s3.us-west-2.amazonaws.com/embedded-app/Step2.gif"
+            />
+          </MediaCard>
+          <MediaCard
+            title='3. Add block "Gift Button" and choose where you want it displayed'
+            description=""
+            portrait
+          >
+            <img
+              alt="GiftIt Installation Step 3"
+              width="100%"
+              height="100%"
+              style={{
+                objectFit: 'cover',
+                objectPosition: 'center',
+              }}
+              src="https://giftit-assets.s3.us-west-2.amazonaws.com/embedded-app/Step3.gif"
+            />
+          </MediaCard>
+          <MediaCard
+            title="4. Click Save and you're done!"
+            description=""
+            portrait
+          >
+            <img
+              alt="GiftIt Installation Step 4"
+              width="100%"
+              height="100%"
+              style={{
+                objectFit: 'cover',
+                objectPosition: 'center',
+              }}
+              src="https://giftit-assets.s3.us-west-2.amazonaws.com/embedded-app/Step4.gif"
+            />
+          </MediaCard>
+          <Card
+            title="Happy Selling!"
+            sectioned
+          >
+            <p>Have a question? Email us at: support@giftitnow.io</p>
+          </Card>
+        </Collapsible>
       </Page>
     </>
   )

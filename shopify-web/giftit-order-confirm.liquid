@@ -1,3 +1,6 @@
+<head>
+    <link href="https://giftit-app.herokuapp.com/giftit-css" rel="stylesheet" />
+</head>
 <body>
     <div class="giftit-loading">
         <div class="giftit-loader"></div>
@@ -20,7 +23,7 @@
 
         data.shop = Shopify.shop
 
-        const ret = await (await fetch('https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.ioconfirm-purchase', {
+        const ret = await (await fetch('https://giftit-app.herokuapp.com/confirm-purchase', {
             method: 'POST',
             mode: 'cors',
             headers: {

@@ -6,6 +6,10 @@ div {
   display: none !important;
 }
 
+.giftit-loader.hide {
+  display: none !important;
+}
+
 .giftit-gift-message {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -19,6 +23,8 @@ div {
 }
 
 .giftit-error-container {
+  display: flex;
+  align-items: stretch;
   flex-direction: column;
   width: 100%;
 }
@@ -31,6 +37,7 @@ div {
   float: right;
   color: gray;
   margin: 0pt;
+  font-size: 1.2rem;
 }
 
 @media only screen and (max-width: 46.85em) {
@@ -47,7 +54,7 @@ div {
 .giftit-order-modal {
   position: fixed; /* Stay in place */
   padding-top: 100px;
-  z-index: 1; /* Sit on top */
+  z-index: 1001; /* Sit on top */
   left: 0;
   top: 0;
   width: 100%; /* Full width */
@@ -59,7 +66,10 @@ div {
 
 /* Modal Content/Box */
 .giftit-modal-content {
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background-color: #fefefe;
   margin: auto;
   background-clip: padding-box;
@@ -75,7 +85,6 @@ div {
 
 .giftit-modal-display-content {
   padding: 32px 0;
-  min-width: 300px;
 }
 .giftit-modal-display-content:last-child {
   text-align: center;
@@ -121,10 +130,6 @@ div {
   white-space: nowrap;
 }
 
-.giftit-steps-item:last-child {
-  flex: none;
-}
-
 .giftit-item-title {
   position: relative;
   display: inline-block;
@@ -155,6 +160,14 @@ div {
   height: 1px;
   background: #bbbaba;
   content: "";
+}
+
+:not(.giftit-steps-vertical)
+  > .giftit-steps-item:last-child
+  > .giftit-steps-container
+  > .giftit-steps-item-content
+  > .giftit-item-title::after {
+  content: none;
 }
 
 .giftit-steps-item-tail {
@@ -248,22 +261,22 @@ div {
 /* Add Animation */
 @-webkit-keyframes animatetop {
   from {
-    top: -300px;
+    top: 0;
     opacity: 0;
   }
   to {
-    top: 0;
+    top: 50%;
     opacity: 1;
   }
 }
 
 @keyframes animatetop {
   from {
-    top: -300px;
+    top: 0;
     opacity: 0;
   }
   to {
-    top: 0;
+    top: 50%;
     opacity: 1;
   }
 }
@@ -271,8 +284,12 @@ div {
 .giftit-modal-header {
   padding: 20px 16px 0px;
   border-bottom: 1px solid #e5e5e5;
-  color: white;
+  color: white !important;
   background-color: rgba(174, 174, 174, 0.556);
+}
+
+.giftit-modal-header > h2 {
+  margin: 0 0 2rem;
 }
 .giftit-success {
   background-color: #5cb85c;
@@ -355,6 +372,10 @@ button[disabled] {
   width: 100%;
 }
 
+.iti__flag-container div:empty {
+  display: block;
+}
+
 .giftit-text-container {
   display: block;
 }
@@ -382,17 +403,16 @@ button[disabled] {
 .giftit-input-item input,
 .giftit-message textarea {
   padding: 8px 15px;
+  border: 1px black solid;
 }
 
 .giftit-input-item select {
-  padding-right: 28px;
-  padding-top: 8px;
-  padding-left: 15px;
-  padding-bottom: 8px;
+  padding: 8px 28px 8px 15px;
+  border: 1px black solid;
 }
 
 @media only screen and (max-width: 46.85em) {
-  .giftit-gift-information > .giftit-container .giftit-input-item:first-child {
+  .giftit-gift-information > .giftit-container > .giftit-input-item:first-child {
     margin: 0 0 16px;
   }
 
@@ -424,14 +444,17 @@ button[disabled] {
   }
 }
 
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 650px) {
   .giftit-modal-content {
     padding: 32px 16px 0;
+    max-height: 100%;
+    overflow-y: auto;
   }
 
   #giftit-nav-bar > .giftit-steps-item {
     display: none;
   }
+
   #giftit-nav-bar > .giftit-steps-item-active,
   #giftit-nav-bar > .giftit-steps-item-active + .giftit-steps-item,
   #giftit-nav-bar > .giftit-steps-item-active:first-child + .giftit-steps-item + .giftit-steps-item,
@@ -440,12 +463,36 @@ button[disabled] {
   }
 }
 
+@media only screen and (max-height: 800px) and (max-width: 650px) {
+  .giftit-modal-display-content {
+    padding: 0 0 20px;
+  }
+
+  .giftit-container {
+    margin-bottom: 0px;
+  }
+
+  .giftit-error {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+}
+
+@media only screen and (max-width: 1100px) {
+  .giftit-steps-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
 .giftit-loader {
   border: 16px solid #f3f3f3; /* Light grey */
   border-top: 16px solid #1890ff; /* Blue */
-  margin: 10px auto;
+  margin: 10px auto !important;
   border-radius: 50%;
-  display: block;
+  display: block !important;
   margin: 5% auto;
   width: 120px;
   height: 120px;
@@ -529,4 +576,16 @@ button[disabled] {
   50% {
     transform: scale3d(1.1, 1.1, 1);
   }
+}
+
+.giftit-input-address {
+  flex-direction: column;
+}
+
+.giftit-gift-information > .giftit-container .giftit-input-item:only-child {
+  margin-right: 0;
+}
+
+.giftit-btn-address {
+  display: inline-block !important;
 }

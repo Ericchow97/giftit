@@ -39,7 +39,6 @@ function userLoggedInFetch(app) {
 
 function MyProvider(props) {
   const app = useAppBridge();
-  console.log(props.redirect)
   if (props.redirect) {
     const redirect = Redirect.create(app);
     redirect.dispatch(Redirect.Action.REMOTE, props.redirect);
@@ -89,20 +88,19 @@ MyApp.getInitialProps = async ({ ctx }) => {
     );
   }
 
-  const { shopOrigin, orders, configuration, redirect } = await (await fetch(`https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.io/get-shop-data`, {
+  const { shopOrigin, orders, configuration, redirect } = await (await fetch(`https://giftit-app.herokuapp.com/get-shop-data`, {
     method: 'GET',
     credentials: "include",
     headers: {
       shop: shopName
     }
   })).json()
-
   return {
     host: ctx.query.host,
     redirect,
     shopOrigin: shopOrigin ? shopOrigin : shopName,
     pageProps: {
-      shopOrigin,
+      origin: shopOrigin ? shopOrigin : shopName,
       appName: 'GiftIt',
       orders: (orders ? orders : []),
       configuration

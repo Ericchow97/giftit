@@ -36,27 +36,6 @@ interface returnStatus {
  */
 export const handleInstallation = async (shop: string, accessToken: string): Promise<void> => {
     try {
-        // install script tags
-        // see if script tag already exists
-        const { data: { script_tags } } = await axios.get(`https://${shop}/admin/api/2021-04/script_tags.json?src=https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.io/giftit-script`, {
-            headers: {
-                "X-Shopify-Access-Token": accessToken
-            }
-        });
-        // if script tag does not exist, then add 
-        if (!script_tags.length) {
-            const { data } = await axios.post(`https://${shop}/admin/api/2021-04/script_tags.json`, {
-                "script_tag": {
-                    "event": "onload",
-                    "src": "https://3a5b-2607-fea8-a380-852-bd63-e991-7e80-f43f.ngrok.io/giftit-script"
-                }
-            }, {
-                headers: {
-                    "X-Shopify-Access-Token": accessToken
-                }
-            });
-            console.log(data)
-        }
         // get all pages 
         const { data: { pages } } = await axios.get(`https://${shop}/admin/api/2021-01/pages.json`, {
             headers: {
@@ -120,6 +99,41 @@ export const handleInstallation = async (shop: string, accessToken: string): Pro
                     "X-Shopify-Access-Token": accessToken
                 },
             });
+        }
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+/**
+ * Installs Script Tag on Older Themes
+ * 
+ * @param shop Name of the shopify store
+ * @param accessToken Shopify accessToken for specific store
+ * @return 
+ */
+ export const installScriptTag = async (shop: string, accessToken: string): Promise<void> => {
+    try {
+        // install script tags
+        // see if script tag already exists
+        const { data: { script_tags } } = await axios.get(`https://${shop}/admin/api/2021-04/script_tags.json?src=https://giftit-app.herokuapp.com/giftit-script`, {
+            headers: {
+                "X-Shopify-Access-Token": accessToken
+            }
+        });
+        // if script tag does not exist, then add 
+        if (!script_tags.length) {
+            const { data } = await axios.post(`https://${shop}/admin/api/2021-04/script_tags.json`, {
+                "script_tag": {
+                    "event": "onload",
+                    "src": "https://giftit-app.herokuapp.com/giftit-script"
+                }
+            }, {
+                headers: {
+                    "X-Shopify-Access-Token": accessToken
+                }
+            });
+            console.log(data)
         }
     } catch (err) {
         console.log(err)
@@ -320,6 +334,14 @@ export const createDraftInvoice = async (adminAccessToken: string, shop: string,
                                 }
                             }
                         }
+                        privateMetafields(namespace: "__giftit", first: 1){
+                            edges {
+                                node {
+                                    namespace
+                                    value
+                                }
+                            }
+                        }
                     }
                     userErrors {
                         field
@@ -381,7 +403,7 @@ export const sendEmail = async (to: string, templateId: string, dynamicTemplateD
     try {
         await sgMail.send({
             to: to,
-            from: 'eric.chow800@gmail.com',
+            from: 'admin@giftitnow.io',
             templateId: templateId,
             dynamicTemplateData: dynamicTemplateData,
             ...(customArgs && {
@@ -411,11 +433,21 @@ export const sendEmailOrMessage = async (orderInformation: any, url: string, dra
 
     //TODO: update from email to actual email
     // send email to purchaser confirming order has been placed
-    let ret = await sendEmail(orderInformation.purchaserEmail, 'd-db5fc81d6e7141b2b9de0c2620b9e37a', {
+    let ret = await sendEmail(orderInformation.purchaserEmail, 'd-ea22e637a8a34f99ba10de39d8a946ab', {
         subject: 'You sent a gift!',
+        title: `Thank you, ${orderInformation.purchaserName}! Your gift order has been placed!`,
         items: draftOrder.lineItems.edges,
         subtotalPrice: draftOrder.subtotalPrice,
-        customMessage: purchaserCustomMessage
+        customMessage: `<table class="module" role="module" data-type="text"
+        border="0" cellpadding="0" cellspacing="0" width="100%"
+        style="table-layout: fixed;">
+        <tr>
+            <td style="padding:25px 20px 25px 20px;line-height:20px;text-align:inherit;"
+                height="100%" valign="top" bgcolor="">
+                ${purchaserCustomMessage}
+            </td>
+        </tr>
+    </table>`
     }, {
         id: draftOrder.id,
         shop: orderInformation.shop
@@ -442,7 +474,7 @@ export const sendEmailOrMessage = async (orderInformation: any, url: string, dra
         // send text message
         await client.messages
             .create({
-                body: `${(orderInformation.message.trim() || '')} ${orderInformation.purchaserName} sent you a gift! \nClick here ${url}/pages/gift-orders?orderId=${encodeURIComponent(draftOrder.id)}&token=${orderInformation.token} to confirm the shipping address`,
+                body: `${orderInformation.purchaserName} sent you a gift! \n${(orderInformation.message.trim() || '')} \nClick here ${url}/pages/gift-orders?orderId=${encodeURIComponent(draftOrder.id)}&token=${orderInformation.token} to confirm the shipping address`,
                 from: '+16473715520',
                 to: `${orderInformation.phone}`
             })
@@ -570,8 +602,9 @@ export const updateCustomerAddress = async (accessToken: string, updateInformati
             }
         })
         //TODO: Allow custom message
-        const ret = await sendEmail(draftOrder.email, 'd-db5fc81d6e7141b2b9de0c2620b9e37a', {
+        const ret = await sendEmail(draftOrder.email, 'd-a79538a838cf4026b327163c5e01adf4', {
             subject: 'Complete your purchase',
+            title: `${updateInformation.first_name.charAt(0).toUpperCase() + updateInformation.first_name.slice(1)} has updated their address!`,
             items: draftOrder.lineItems.edges,
             subtotalPrice: draftOrder.subtotalPrice,
             shopCta: `<div align="center">
@@ -675,9 +708,9 @@ export const deleteOrders = async (accessToken: string, origin: any, order: Orde
     // send deleted email to purchaser
     ret = await sendEmail(order.purchaserEmail, 'd-6b3fb774c0cf492c8822ce96a58d6115', {
         subject: subject,
+        title: "The merchant has cancelled your order.",
         customMessage: deleteMessage
     })
-
     return ret;
 }
 
@@ -772,7 +805,7 @@ export const sendCustomerInfoEmail = async (customerId: string, csv: string, sho
     try {
         await sgMail.send({
             to: shopInfo.storeEmail,
-            from: 'eric.chow800@gmail.com',
+            from: 'admin@giftitnow.io',
             subject: `GiftIt Customer Information on Customer ${customerId}`,
             text: `Hello ${shopInfo.storeName},
 
