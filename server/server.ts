@@ -136,55 +136,29 @@ app.prepare().then(async () => {
     return Promise.resolve()
   }
 
+  const handleThemePublishWebhook = async (_topic: any, shop: any, _body: any) => {
+    const theme = JSON.parse(_body)
+    console.log(theme)
+
+    return Promise.resolve()
+  }
+
   // Register webhook on the server
   Shopify.Webhooks.Registry.webhookRegistry.push(
     { path: "/webhooks", topic: "DRAFT_ORDERS_UPDATE", webhookHandler: handleDraftOrdersWebhook },
     { path: "/webhooks", topic: "SHOP_UPDATE", webhookHandler: handleNameChangeWebhook },
     { path: "/webhooks", topic: "APP_UNINSTALLED", webhookHandler: handleAppUninstallWebhook },
     { path: "/webhooks", topic: "APP_SUBSCRIPTIONS_UPDATE", webhookHandler: handleAppSubscriptionUpdateWebhook },
+    { path: "/webhooks", topic: "THEMES_PUBLISH", webhookHandler: handleThemePublishWebhook },
   );
 
   const activeShops = db.find({ active: true }, {
-    projection: { shop: 1, accessToken: 1 }
-
+    projection: { shop: 1 }
   })
-  //TODO: Remove
-  const dummy: any = []
 
   await activeShops.forEach(shop => {
     ACTIVE_SHOPIFY_SHOPS[shop.shop] = { scope: process.env.SCOPES }
-    dummy.push({ shop: shop.shop, accessToken: shop.accessToken })
   })
-
-  console.log(dummy)
-  for (let i = 0; i < dummy.length; i++) {
-    try {
-      const { data: { script_tags } } = await axios.get(`https://${dummy[i].shop}/admin/api/2021-10/script_tags.json`, {
-        headers: {
-          "X-Shopify-Access-Token": dummy[i].accessToken
-        }
-      })
-      console.log(script_tags)
-      // const script = script_tags.find((elem: any) => elem.src ==='https://giftit-app.herokuapp.com/giftit-script')
-      // const { data } = await axios.delete(`https://${dummy[i].shop}/admin/api/2021-10/script_tags/${script.id}.json`, {
-      //   headers: {
-      //     "X-Shopify-Access-Token": dummy[i].accessToken
-      //   }
-      // })
-      // console.log(data)
-    }
-    catch {
-      console.log('error')
-    }
-  }
-  //TODO: Remove
-  // Promise.all(dummy.map((shop: any) => {
-  //   axios.get(`https://${shop.shop}/admin/api/2021-10/script_tags.json`, {
-  //     headers: {
-  //       "X-Shopify-Access-Token": shop.accessToken
-  //     }
-  //   })
-  // })).then(values => console.log(values))
 
   server.use(cors());
   server.keys = [Shopify.Context.API_SECRET_KEY];
@@ -232,7 +206,6 @@ app.prepare().then(async () => {
           console.log(err.response.data);
         }
 
-        //TODO: Look into webhooks getting deleted on server restart
         // register webhook for when orders are completed
         const registration_orders = await Shopify.Webhooks.Registry.register({
           shop,
@@ -268,10 +241,18 @@ app.prepare().then(async () => {
           webhookHandler: handleAppSubscriptionUpdateWebhook,
         });
 
-        if (registration_orders.success && registration_name.success && registration_uninstall.success && registration_charge_status.success) {
+        const registration_theme_update = await Shopify.Webhooks.Registry.register({
+          shop,
+          accessToken,
+          path: '/webhooks',
+          topic: 'THEMES_PUBLISH',
+          webhookHandler: handleThemePublishWebhook,
+        });
+
+        if (registration_orders.success && registration_name.success && registration_uninstall.success && registration_charge_status.success && registration_theme_update.success) {
           console.log('Successfully registered webhook!');
         } else {
-          console.log('Failed to register webhook', registration_orders.result, registration_name.result, registration_uninstall.result, registration_charge_status.result);
+          console.log('Failed to register webhook', registration_orders.result, registration_name.result, registration_uninstall.result, registration_charge_status.result, registration_theme_update.result);
           return
         }
         // Redirect to app with shop parameter upon auth
@@ -514,6 +495,58 @@ app.prepare().then(async () => {
       }
     }
   });
+
+  /**
+ * Installs scriptTag on storefront 
+ */
+  router.post('/install-script', koaBody(), async (ctx: Koa.Context) => {
+    if (ctx.request.headers.authorization) {
+      const valid = isVerified(ctx.request.headers.authorization, Shopify.Context.API_SECRET_KEY, Shopify.Context.API_KEY)
+      if (!valid) {
+        ctx.status = 500;
+        ctx.body = {
+          type: 'Invalid Connection',
+          error: 'Invalid Connection',
+          message: 'You either do not have access or the token is expired, please try again'
+        };
+      }
+      const dest = parseJwt(ctx.request.headers.authorization)
+      try {
+
+        const { shop, accessToken } = await db.findOne({ shop: dest }) || {};
+
+        if (!accessToken || !shop) {
+          throw {
+            type: 'database',
+            message: 'Unable to connect to database'
+          }
+        }
+
+        const success = giftitFunctions.installScriptTag(shop, accessToken)
+        if (!success) {
+          throw {
+            type: 'Installation',
+            message: 'Unable to install script, please refresh and try again.'
+          }
+        }
+        ctx.body = {
+          success: true,
+        }
+      }
+      catch (error) {
+        if ((error as CustomError).type) {
+          const err = error as CustomError
+          ctx.status = 500;
+          ctx.body = {
+            type: err.type,
+            error: err.error,
+            message: err.message
+          };
+        }
+      }
+    }
+  });
+
 
   /**** USER ENDPOINTS ****/
   /**

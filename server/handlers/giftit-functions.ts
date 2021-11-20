@@ -113,31 +113,47 @@ export const handleInstallation = async (shop: string, accessToken: string): Pro
  * @param accessToken Shopify accessToken for specific store
  * @return 
  */
- export const installScriptTag = async (shop: string, accessToken: string): Promise<void> => {
+ export const installScriptTag = async (shop: string, accessToken: string): Promise<boolean> => {
     try {
-        // install script tags
-        // see if script tag already exists
-        const { data: { script_tags } } = await axios.get(`https://${shop}/admin/api/2021-04/script_tags.json?src=${NPM_CONFIG_PRODUCTION}/giftit-script`, {
+        const { data } = await axios.post(`https://${shop}/admin/api/2021-01/graphql.json`, {
+            query: `query scriptTags($src: SRC!) {
+                scriptTags(src: $src) {
+                    edges: [
+                        node {
+                            id
+                            src
+                        }
+                    ]
+                }
+            }`,
+            variables: {
+                src: `https://giftit-app.herokuapp.com/giftit-script`
+            }
+        }, {
             headers: {
                 "X-Shopify-Access-Token": accessToken
             }
-        });
+        })
+        console.log(data)
+        console.log(data.edges[0])
         // if script tag does not exist, then add 
-        if (!script_tags.length) {
-            const { data } = await axios.post(`https://${shop}/admin/api/2021-04/script_tags.json`, {
-                "script_tag": {
-                    "event": "onload",
-                    "src": "https://giftit-app.herokuapp.com/giftit-script"
-                }
-            }, {
-                headers: {
-                    "X-Shopify-Access-Token": accessToken
-                }
-            });
-            console.log(data)
-        }
+        // if (!script_tags.length) {
+        //     const { data } = await axios.post(`https://${shop}/admin/api/2021-04/script_tags.json`, {
+        //         "script_tag": {
+        //             "event": "onload",
+        //             "src": "https://giftit-app.herokuapp.com/giftit-script"
+        //         }
+        //     }, {
+        //         headers: {
+        //             "X-Shopify-Access-Token": accessToken
+        //         }
+        //     });
+        //     console.log(data)
+        // }
+        return true
     } catch (err) {
         console.log(err)
+        return false
     }
 }
 
