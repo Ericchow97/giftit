@@ -138,6 +138,7 @@ app.prepare().then(async () => {
 
   const handleThemePublishWebhook = async (_topic: any, shop: any, _body: any) => {
     const theme = JSON.parse(_body)
+    console.log(shop)
     console.log(theme)
 
     return Promise.resolve()
