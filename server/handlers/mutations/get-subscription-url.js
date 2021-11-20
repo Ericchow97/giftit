@@ -8,7 +8,6 @@ export function RECURRING_CREATE(url) {
       appSubscriptionCreate(
           name: "Basic Plan"
           returnUrl: "${url}"
-          test: true
           trialDays: 30
           lineItems: [
             {
