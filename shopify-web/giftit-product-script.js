@@ -38,8 +38,10 @@ if (giftitRef) {
 
     // insert html into product form
     giftitRef.insertAdjacentHTML('afterend', `
-<div class='giftit-container'>
-    <button type='button' id='giftit' name='Gift_Item' >Give as a gift</button>
+    <div class='giftit-container'>
+    <form class='form'>
+        <button type='button' id='giftit' name='Gift_Item'>Give as a gift</button>
+    </form>
 </div>
 <form action="https://giftit-app.herokuapp.com/gift-checkout" method="POST" autocomplete="on" class="giftit-form">
     <div id="giftit-modal" class="giftit-order-modal hide">
@@ -205,7 +207,7 @@ if (giftitRef) {
                         </div>
                         <div class="giftit-input-item">
                             <div class="giftit-error-container">
-                                <div class="giftit-input-item">
+                                <div class="giftit-input-item" style="margin-right:0;">
                                     <select id="giftit-recipient-contact-dropdown" name="method" value="Email">
                                         <option value="Email">Email</option>
                                         <option value="Phone">Phone</option>
@@ -237,22 +239,23 @@ if (giftitRef) {
             <div class='giftit-modal-display-content hide'>
                 <div class="giftit-gift-information">
                     <div class='giftit-container'>
-                            <div class='giftit-full-description'>
-                                <div>
-                                    <div class="giftit-item-title">To: <span id='giftit-recipientName'></span></div>
-                                </div>
-                                <div>
-                                    <div class="giftit-item-title"> Contact: <span id='giftit-recipientContact'></span></div>
+                        <div class='giftit-full-description'>
+                            <div>
+                                <div class="giftit-item-title">To: <span id='giftit-recipientName'></span></div>
+                            </div>
+                            <div>
+                                <div class="giftit-item-title"> Contact: <span id='giftit-recipientContact'></span>
                                 </div>
                             </div>
-                            <div class='giftit-full-description'>
-                                <div>
-                                    <div class="giftit-item-title">From: <span id='giftit-purchaserName'></span></div>
-                                </div>
-                                <div>
-                                    <div class="giftit-item-title"> Contact: <span id='giftit-purchaserEmail'></span></div>
-                                </div>
+                        </div>
+                        <div class='giftit-full-description'>
+                            <div>
+                                <div class="giftit-item-title">From: <span id='giftit-purchaserName'></span></div>
                             </div>
+                            <div>
+                                <div class="giftit-item-title"> Contact: <span id='giftit-purchaserEmail'></span></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="giftit-message">
@@ -277,7 +280,7 @@ if (giftitRef) {
                 </svg>
                 <div style="width: 100%;">
                     <p class="giftit-loading-text giftit-item-title">Checking available inventory</p>
-                <!-- TODO: See what information you can pass back for order confirmation display -->
+                    <!-- TODO: See what information you can pass back for order confirmation display -->
 
                     <p class="giftit-text-success giftit-item-title hide">Congratulations, your order has been
                         successfully placed! Please check your inbox shortly for a confirmation of your order. We will
@@ -286,7 +289,7 @@ if (giftitRef) {
                         try again. If you've experienced this error multiple times please contact the store for more
                         details.
                     </p>
-                    <p class="giftit-text-fail-orders giftit-item-title hide">Your order cannot be placed at this time. 
+                    <p class="giftit-text-fail-orders giftit-item-title hide">Your order cannot be placed at this time.
                         You have placed too many orders. Please try again later.
                     </p>
                 </div>
@@ -306,11 +309,13 @@ if (giftitRef) {
 
     // update button to match type
     document.querySelector('#giftit').classList = giftitRef.querySelector('button').classList
+    document.querySelector('#giftit').parentElement.parentElement.classList = giftitRef.querySelector('button').parentElement.parentElement.parentElement.classList
 
     const modalRef = document.querySelector('.giftit-order-modal')
 
     // Open gift modal
-    document.querySelector('#giftit').addEventListener('click', async () => {
+    document.querySelector('#giftit').addEventListener('click', async (event) => {
+        event.preventDefault();
         window.scroll({
             top: window.pageYOffset - Math.abs(modalRef.getBoundingClientRect().top),
             left: 0,
@@ -550,7 +555,6 @@ if (giftitRef) {
         event.preventDefault();
         // get & update cookies to prevent users from wiping out inventory
         const giftitOrderCount = getCookieCount();
-        console.log(giftitOrderCount)
         if (giftitOrderCount >= 10) {
             document.querySelector('.giftit-text-fail-orders').classList.remove('hide')
             return
@@ -602,7 +606,6 @@ if (giftitRef) {
             successRef.children[0].style.animationPlayState = 'running'
             successRef.children[1].style.animationPlayState = 'running'
             document.querySelector('.giftit-text-success').classList.remove('hide')
-
             // update cookie on successful order
             // TODO: Include actual order number instead
             document.cookie = `giftIt_order_${giftitOrderCount}=1; expires=${new Date((new Date().getTime() + 60 * 60 * 1000)).toUTCString()}; path=/`;

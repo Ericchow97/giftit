@@ -144,12 +144,18 @@ app.prepare().then(async () => {
     { path: "/webhooks", topic: "APP_SUBSCRIPTIONS_UPDATE", webhookHandler: handleAppSubscriptionUpdateWebhook },
   );
 
-  const activeShops = db.find({active: true}, {
-    projection: {shop: 1}
-  })
+  const activeShops = db.find({ active: true }, {
+    projection: { shop: 1, accessToken: 1 }
 
+  })
+  console.log(activeShops)
   await activeShops.forEach(shop => {
-    ACTIVE_SHOPIFY_SHOPS[shop.shop] = {scope: process.env.SCOPES}
+    ACTIVE_SHOPIFY_SHOPS[shop.shop] = { scope: process.env.SCOPES }
+    // console.log(await axios.get(`https://${shop.shop}/admin/api/2021-04/script_tags.json?src=${process.env.NPM_CONFIG_PRODUCTION}/giftit-script`, {
+    //   headers: {
+    //     "X-Shopify-Access-Token": shop.accessToken
+    //   }
+    // }))
   })
 
   server.use(cors());
@@ -707,28 +713,28 @@ app.prepare().then(async () => {
   /**
    * Endpoint to serve script
    */
-  // router.get('/giftit-script', koaBody(), async (ctx: Koa.Context) => {
-  //   try {
-  //     ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-product-script.js', "utf8");
-  //   } catch (error) {
-  //     if ((error as CustomError).type) {
-  //       const err = error as CustomError
-  //       console.log(error)
-  //       ctx.status = 500;
-  //       ctx.body = {
-  //         type: err.type,
-  //         message: err.message
-  //       };
-  //     }
-  //   }
-  // })
+  router.get('/giftit-script', koaBody(), async (ctx: Koa.Context) => {
+    try {
+      ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-product-script.js', "utf8");
+    } catch (error) {
+      if ((error as CustomError).type) {
+        const err = error as CustomError
+        console.log(error)
+        ctx.status = 500;
+        ctx.body = {
+          type: err.type,
+          message: err.message
+        };
+      }
+    }
+  })
 
   /**
    * Endpoint to serve css
    */
   router.get('/giftit-css', koaBody(), async (ctx: Koa.Context) => {
     try {
-      ctx.body = fs.readFileSync(path.join(__dirname, '..', 'shopify-web', 'giftit-styles.css'), "utf8");
+      ctx.body = fs.readFileSync(path.join(__dirname, '..', 'theme-app-extension-prod', 'assets', 'giftit-styles.css'), "utf8");
       ctx.type = "text/css";
     } catch (error) {
       if ((error as CustomError).type) {

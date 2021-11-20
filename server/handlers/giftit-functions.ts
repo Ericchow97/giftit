@@ -14,6 +14,7 @@ const {
     SENDGRID_API_KEY,
     TWILIO_ACCOUNT_SID,
     TWILIO_AUTH_TOKEN,
+    NPM_CONFIG_PRODUCTION,
 } = process.env;
 
 sgMail.setApiKey(SENDGRID_API_KEY!)
@@ -116,7 +117,7 @@ export const handleInstallation = async (shop: string, accessToken: string): Pro
     try {
         // install script tags
         // see if script tag already exists
-        const { data: { script_tags } } = await axios.get(`https://${shop}/admin/api/2021-04/script_tags.json?src=https://giftit-app.herokuapp.com/giftit-script`, {
+        const { data: { script_tags } } = await axios.get(`https://${shop}/admin/api/2021-04/script_tags.json?src=${NPM_CONFIG_PRODUCTION}/giftit-script`, {
             headers: {
                 "X-Shopify-Access-Token": accessToken
             }
