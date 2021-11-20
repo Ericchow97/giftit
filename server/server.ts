@@ -157,15 +157,25 @@ app.prepare().then(async () => {
   })
 
   console.log(dummy)
-
-  //TODO: Remove
-  Promise.all(dummy.map((shop: any) => {
-    axios.get(`https://${shop.shop}/admin/api/2021-10/script_tags.json`, {
+  try {
+    const data = await axios.get(`https://${dummy[0].shop}/admin/api/2021-10/script_tags.json`, {
       headers: {
-        "X-Shopify-Access-Token": shop.accessToken
+        "X-Shopify-Access-Token": dummy[0].accessToken
       }
     })
-  })).then(values => console.log(values))
+    console.log(data)
+  }
+  catch {
+
+  }
+  //TODO: Remove
+  // Promise.all(dummy.map((shop: any) => {
+  //   axios.get(`https://${shop.shop}/admin/api/2021-10/script_tags.json`, {
+  //     headers: {
+  //       "X-Shopify-Access-Token": shop.accessToken
+  //     }
+  //   })
+  // })).then(values => console.log(values))
 
   server.use(cors());
   server.keys = [Shopify.Context.API_SECRET_KEY];
