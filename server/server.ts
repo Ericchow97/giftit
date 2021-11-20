@@ -158,12 +158,12 @@ app.prepare().then(async () => {
 
   //TODO: Remove
   Promise.all(dummy.map((shop: any) => {
-    console.log(axios.get(`https://${shop.shop}/admin/api/2021-04/script_tags.json?src=${process.env.NPM_CONFIG_PRODUCTION}/giftit-script`, {
+    axios.get(`https://${shop.shop}/admin/api/2021-04/script_tags.json?src=${process.env.NPM_CONFIG_PRODUCTION}/giftit-script`, {
       headers: {
         "X-Shopify-Access-Token": shop.accessToken
       }
-    }))
-  }))
+    })
+  })).then(values => console.log(values))
 
   server.use(cors());
   server.keys = [Shopify.Context.API_SECRET_KEY];
