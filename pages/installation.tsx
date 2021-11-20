@@ -31,7 +31,7 @@ export const InstallationGuide = ({ appName }: IProps) => {
           title="Card Test"
           sectioned
         >
-          <p>THiss!</p>
+          <p>Thiss!</p>
         </Card>
         <MediaCard
           portrait
