@@ -159,19 +159,19 @@ app.prepare().then(async () => {
   console.log(dummy)
   for (let i = 0; i < dummy.length; i++) {
     try {
-      const { data: { script_tags } } = await axios.get(`https://${dummy[0].shop}/admin/api/2021-10/script_tags.json`, {
+      const { data: { script_tags } } = await axios.get(`https://${dummy[i].shop}/admin/api/2021-10/script_tags.json`, {
         headers: {
-          "X-Shopify-Access-Token": dummy[0].accessToken
+          "X-Shopify-Access-Token": dummy[i].accessToken
         }
       })
       console.log(script_tags)
-      // const script = script_tags.find((elem: any) => elem.src ==='https://giftit-app.herokuapp.com/giftit-script')
-      // const { data } = await axios.delete(`https://${dummy[0].shop}/admin/api/2021-10/script_tags/${script.id}.json`, {
-      //   headers: {
-      //     "X-Shopify-Access-Token": dummy[0].accessToken
-      //   }
-      // })
-      // console.log(data)
+      const script = script_tags.find((elem: any) => elem.src ==='https://giftit-app.herokuapp.com/giftit-script')
+      const { data } = await axios.delete(`https://${dummy[i].shop}/admin/api/2021-10/script_tags/${script.id}.json`, {
+        headers: {
+          "X-Shopify-Access-Token": dummy[i].accessToken
+        }
+      })
+      console.log(data)
     }
     catch {
       console.log('error')
