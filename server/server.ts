@@ -156,9 +156,11 @@ app.prepare().then(async () => {
     dummy.push({ shop: shop.shop, accessToken: shop.accessToken })
   })
 
+  console.log(dummy)
+
   //TODO: Remove
   Promise.all(dummy.map((shop: any) => {
-    axios.get(`https://${shop.shop}/admin/api/2021-04/script_tags.json?src=${process.env.NPM_CONFIG_PRODUCTION}/giftit-script`, {
+    axios.get(`https://${shop.shop}/admin/api/2021-10/script_tags.json`, {
       headers: {
         "X-Shopify-Access-Token": shop.accessToken
       }
