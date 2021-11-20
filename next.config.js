@@ -5,7 +5,7 @@ const apiKey = JSON.stringify(process.env.SHOPIFY_API_KEY);
 
 module.exports = {
   webpack: (config) => {
-    const env = { API_KEY: apiKey };
+    const env = { API_KEY: apiKey, HOST: process.env.HOST };
     config.plugins.push(new webpack.DefinePlugin(env));
 
     // Add ESM support for .mjs files in webpack 4

@@ -62,7 +62,7 @@ function MyProvider(props) {
 
 const MyApp = ({ Component, shopOrigin, pageProps, host, redirect }) => {
   const [props] = useState(pageProps)
-  const config = { apiKey: API_KEY, shopOrigin, host, forceRedirect: true };
+  const config = { apiKey: process.env.API_KEY, shopOrigin, host, forceRedirect: true, host: process.env.HOST };
   return (
     <>
       <Head>
@@ -88,7 +88,7 @@ MyApp.getInitialProps = async ({ ctx }) => {
     );
   }
 
-  const { shopOrigin, orders, configuration, redirect } = await (await fetch(`https://giftit-app-dev.herokuapp.com/get-shop-data`, {
+  const { shopOrigin, orders, configuration, redirect } = await (await fetch(`https://${process.env.HOST}/get-shop-data`, {
     method: 'GET',
     credentials: "include",
     headers: {
