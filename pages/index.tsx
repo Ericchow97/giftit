@@ -21,7 +21,7 @@ const img = 'https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg';
 
 interface IProps {
   appName: string,
-  host: string,
+  hostEnv: string,
   orders: {
     id: string,
     name: string,
@@ -49,7 +49,7 @@ const Index = (props: IProps) => {
     const getOrderPrices = async (totalPrice: number) => {
       const sessionToken = await getSessionToken(shopifyApp);
       try {
-        const currencyCode = await (await fetch(`${props.host}/graphql`, {
+        const currencyCode = await (await fetch(`${props.hostEnv}/graphql`, {
           method: 'POST',
           mode: 'cors',
           headers: {
@@ -193,7 +193,7 @@ const Index = (props: IProps) => {
 Index.propTypes = {
   appName: PropTypes.string.isRequired,
   orders: PropTypes.array.isRequired,
-  host: PropTypes.string.isRequired,
+  hostEnv: PropTypes.string.isRequired,
 }
 
 export default Index;

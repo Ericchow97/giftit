@@ -26,10 +26,10 @@ import {
       deleteCustomMessage: string,
       recipientReminderMessage: string,
     },
-    host: string
+    hostEnv: string
   }
   
-  const Configuration = ({ configuration, host }: IProps) => {
+  const Configuration = ({ configuration, hostEnv }: IProps) => {
     // custom messages
     const [purchaserCustomMessage, setPurchaserCustomMessage] = useState(configuration.purchaserCustomMessage)
     const [deleteCustomMessage, setDeleteCustomMessage] = useState(configuration.deleteCustomMessage)
@@ -79,7 +79,7 @@ import {
       }
       const sessionToken = await getSessionToken(app);
       // update site configuration
-      const ret = await (await fetch(`${host}/update-configuration`, {
+      const ret = await (await fetch(`${hostEnv}/update-configuration`, {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -217,7 +217,7 @@ import {
   
   Configuration.propTypes = {
     configuration: PropTypes.object.isRequired,
-    host: PropTypes.string.isRequired
+    hostEnv: PropTypes.string.isRequired
   }
   
   export default Configuration;

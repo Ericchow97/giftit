@@ -33,7 +33,7 @@ import {Redirect} from '@shopify/app-bridge/actions';
 
 interface IProps {
   origin: string,
-  host: string,
+  hostEnv: string,
   orders: {
     id: string,
     name: string,
@@ -75,7 +75,7 @@ interface ActiveOrder {
   index: number
 }
 
-const GiftOrders = ({ origin, host, orders }: IProps) => {
+const GiftOrders = ({ origin, hostEnv, orders }: IProps) => {
   const [activeOrders, setActiveOrders] = useState<Order[]>(orders)
   const [activeOrder, setActiveOrder] = useState<ActiveOrder>({ order: orders[0], index: 0 });
   let activeOrderRecent = false
@@ -234,7 +234,7 @@ const GiftOrders = ({ origin, host, orders }: IProps) => {
     }
 
     const sessionToken = await getSessionToken(app);
-    const ret = await (await fetch(`${host}/delete-orders`, {
+    const ret = await (await fetch(`${hostEnv}/delete-orders`, {
       method: 'POST',
       mode: 'cors',
       headers: {
@@ -296,7 +296,7 @@ const GiftOrders = ({ origin, host, orders }: IProps) => {
     if (emailList.length) {
       const sessionToken = await getSessionToken(app);
 
-      const ret = await (await fetch(`${host}/send-reminders`, {
+      const ret = await (await fetch(`${hostEnv}/send-reminders`, {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -594,7 +594,7 @@ const GiftOrders = ({ origin, host, orders }: IProps) => {
 GiftOrders.propTypes = {
   origin: PropTypes.string.isRequired,
   orders: PropTypes.array.isRequired,
-  host: PropTypes.string.isRequired
+  hostEnv: PropTypes.string.isRequired
 }
 
 export default GiftOrders;

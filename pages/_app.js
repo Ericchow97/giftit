@@ -62,7 +62,7 @@ function MyProvider(props) {
 
 const MyApp = ({ Component, shopOrigin, pageProps, host, redirect }) => {
   const [props] = useState(pageProps)
-  const config = { apiKey: API_KEY, shopOrigin, host, forceRedirect: true };
+  const config = { apiKey: API_KEY, shopOrigin, host, forceRedirect: true, hostEnv };
   return (
     <>
       <Head>
@@ -87,6 +87,7 @@ MyApp.getInitialProps = async ({ ctx }) => {
       "shop"
     );
   }
+  console.log(ctx.query.host)
   const { shopOrigin, orders, configuration, redirect } = await (await fetch(`${process.env.HOST}/get-shop-data`, {
     method: 'GET',
     credentials: "include",
@@ -95,7 +96,7 @@ MyApp.getInitialProps = async ({ ctx }) => {
     }
   })).json()
   return {
-    host: process.env.HOST,
+    host: ctx.query.host,
     redirect,
     shopOrigin: shopOrigin ? shopOrigin : shopName,
     pageProps: {
@@ -103,7 +104,8 @@ MyApp.getInitialProps = async ({ ctx }) => {
       appName: 'GiftIt',
       orders: (orders ? orders : []),
       configuration
-    }
+    },
+    hostEnv: process.env.HOST
   }
 };
 
