@@ -60,9 +60,11 @@ function MyProvider(props) {
   );
 }
 
-const MyApp = ({ Component, shopOrigin, pageProps, host, redirect, hostEnv }) => {
+const MyApp = ({ Component, shopOrigin, pageProps, host, redirect }) => {
   const [props] = useState(pageProps)
+  console.log(props)
   const config = { apiKey: API_KEY, shopOrigin, host, forceRedirect: true };
+  console.log(HOST)
   return (
     <>
       <Head>
@@ -73,7 +75,7 @@ const MyApp = ({ Component, shopOrigin, pageProps, host, redirect, hostEnv }) =>
         <Provider config={config}>
           <ClientRouter />
           <RoutePropagator />
-          <MyProvider Component={Component} {...props} {...config} redirect={redirect} hostEnv={hostEnv} />
+          <MyProvider Component={Component} {...props} {...config} redirect={redirect}/>
         </Provider>
       </AppProvider>
     </>
@@ -104,9 +106,9 @@ MyApp.getInitialProps = async ({ ctx }) => {
       origin: shopOrigin ? shopOrigin : shopName,
       appName: 'GiftIt',
       orders: (orders ? orders : []),
-      configuration
+      configuration,
+      hostEnv: process.env.HOST
     },
-    hostEnv: process.env.HOST
   }
 };
 
