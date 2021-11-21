@@ -62,7 +62,7 @@ function MyProvider(props) {
 
 const MyApp = ({ Component, shopOrigin, pageProps, host, redirect }) => {
   const [props] = useState(pageProps)
-  const config = { apiKey: API_KEY, shopOrigin, host, forceRedirect: true, hostEnv };
+  const config = { apiKey: API_KEY, shopOrigin, host, forceRedirect: true };
   return (
     <>
       <Head>
@@ -103,9 +103,10 @@ MyApp.getInitialProps = async ({ ctx }) => {
       origin: shopOrigin ? shopOrigin : shopName,
       appName: 'GiftIt',
       orders: (orders ? orders : []),
-      configuration
+      configuration,
+      hostEnv: process.env.HOST
     },
-    hostEnv: process.env.HOST
+    
   }
 };
 

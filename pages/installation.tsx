@@ -5,8 +5,11 @@ import {
   Button,
   Collapsible,
 } from '@shopify/polaris';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from "prop-types";
+
+import { useAppBridge } from '@shopify/app-bridge-react';
+import { getSessionToken } from "@shopify/app-bridge-utils";
 
 type Options = {
   key: number,
@@ -15,12 +18,30 @@ type Options = {
 }
 
 interface IProps {
-  appName: string;
-  themes: Options[]
+  appName: string,
+  hostEnv: string,
 }
 
-export const InstallationGuide = ({ appName }: IProps) => {
+export const InstallationGuide = ({ appName, hostEnv }: IProps) => {
   const [showSteps, setShowSteps] = useState(false)
+
+  const shopifyApp = useAppBridge();
+
+  useEffect(() => {
+    const getThemes = async () => {
+      // const sessionToken = await getSessionToken(shopifyApp);
+      try {
+        const ret = await (await fetch(`${hostEnv}/get-themes`, {
+          method: 'GET',
+          credentials: "include"
+        })).json()
+        console.log(ret)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    getThemes()
+  }, [])
 
   return (
     <>
@@ -149,7 +170,8 @@ export const InstallationGuide = ({ appName }: IProps) => {
 }
 
 InstallationGuide.propTypes = {
-  appName: PropTypes.string.isRequired
+  appName: PropTypes.string.isRequired,
+  hostEnv: PropTypes.string.isRequired
 }
 
 export default InstallationGuide;

@@ -497,6 +497,7 @@ app.prepare().then(async () => {
     }
   });
 
+  //TODO: Complete
   /**
  * Installs scriptTag on storefront 
  */
@@ -524,6 +525,58 @@ app.prepare().then(async () => {
         }
 
         const success = giftitFunctions.installScriptTag(shop, accessToken)
+        if (!success) {
+          throw {
+            type: 'Installation',
+            message: 'Unable to install script, please refresh and try again.'
+          }
+        }
+        ctx.body = {
+          success: true,
+        }
+      }
+      catch (error) {
+        if ((error as CustomError).type) {
+          const err = error as CustomError
+          ctx.status = 500;
+          ctx.body = {
+            type: err.type,
+            error: err.error,
+            message: err.message
+          };
+        }
+      }
+    }
+  });
+
+  //TODO: Complete
+  /**
+ * Checks Themes for a store 
+ */
+   router.get('/get-themes', koaBody(), async (ctx: Koa.Context) => {
+    if (ctx.request.headers.authorization) {
+      const valid = isVerified(ctx.request.headers.authorization, Shopify.Context.API_SECRET_KEY, Shopify.Context.API_KEY)
+      if (!valid) {
+        ctx.status = 500;
+        ctx.body = {
+          type: 'Invalid Connection',
+          error: 'Invalid Connection',
+          message: 'You either do not have access or the token is expired, please try again'
+        };
+      }
+      const dest = parseJwt(ctx.request.headers.authorization)
+      try {
+
+        const { shop, accessToken } = await db.findOne({ shop: dest }) || {};
+
+        if (!accessToken || !shop) {
+          throw {
+            type: 'database',
+            message: 'Unable to connect to database'
+          }
+        }
+
+        const success = giftitFunctions.getThemes(shop, accessToken)
         if (!success) {
           throw {
             type: 'Installation',

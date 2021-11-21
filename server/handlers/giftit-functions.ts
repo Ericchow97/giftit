@@ -106,6 +106,7 @@ export const handleInstallation = async (shop: string, accessToken: string): Pro
     }
 }
 
+
 /**
  * Installs Script Tag on Older Themes
  * 
@@ -113,7 +114,53 @@ export const handleInstallation = async (shop: string, accessToken: string): Pro
  * @param accessToken Shopify accessToken for specific store
  * @return 
  */
- export const installScriptTag = async (shop: string, accessToken: string): Promise<boolean> => {
+export const getThemes = async (shop: string, accessToken: string): Promise<boolean> => {
+    try {
+        const { data } = await axios.get(`https://${shop}/admin/api/2021-10/themes.json`, {
+            headers: {
+                "X-Shopify-Access-Token": accessToken
+            }
+        })
+        console.log(data)
+        const published_theme = data.themes.find((theme: any) => theme.role === 'main')
+        console.log(published_theme)
+
+        const { data : data2 } = await axios.get(`https://${shop}/admin/api/2021-10/themes/${published_theme.id}/assets.json`, {
+            headers: {
+                "X-Shopify-Access-Token": accessToken
+            }
+        })
+        console.log(data2)
+        // if script tag does not exist, then add 
+        // if (!script_tags.length) {
+        //     const { data } = await axios.post(`https://${shop}/admin/api/2021-04/script_tags.json`, {
+        //         "script_tag": {
+        //             "event": "onload",
+        //             "src": "https://giftit-app.herokuapp.com/giftit-script"
+        //         }
+        //     }, {
+        //         headers: {
+        //             "X-Shopify-Access-Token": accessToken
+        //         }
+        //     });
+        //     console.log(data)
+        // }
+        return true
+    } catch (err) {
+        console.log(err)
+        return false
+    }
+}
+
+//TODO: complete
+/**
+ * Installs Script Tag on Older Themes
+ * 
+ * @param shop Name of the shopify store
+ * @param accessToken Shopify accessToken for specific store
+ * @return 
+ */
+export const installScriptTag = async (shop: string, accessToken: string): Promise<boolean> => {
     try {
         const { data } = await axios.post(`https://${shop}/admin/api/2021-01/graphql.json`, {
             query: `query scriptTags($src: SRC!) {
