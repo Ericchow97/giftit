@@ -29,26 +29,26 @@ export const InstallationGuide = ({ appName, hostEnv }: IProps) => {
   console.log(shopifyApp)
   console.log(hostEnv)
 
-  // useEffect(() => {
-  //   const getThemes = async () => {
-  //     const sessionToken = await getSessionToken(shopifyApp);
-  //     try {
-  //       const ret = await (await fetch(`${hostEnv}/get-themes`, {
-  //         method: 'GET',
-  //         mode: 'cors',
-  //         credentials: "include",
-  //         headers: {
-  //           'Authorization': sessionToken
-  //         },
-  //       })).json()
-  //       console.log(ret)
-  //     } catch (err) {
-  //       console.log(err)
-  //     }
-  //   }
+  useEffect(() => {
+    const getThemes = async () => {
+      const sessionToken = await getSessionToken(shopifyApp);
+      try {
+        const ret = await (await fetch(`${hostEnv}/get-themes`, {
+          method: 'GET',
+          mode: 'cors',
+          credentials: "include",
+          headers: {
+            'Authorization': sessionToken
+          },
+        })).json()
+        console.log(ret)
+      } catch (err) {
+        console.log(err)
+      }
+    }
 
-  //   getThemes()
-  // }, [])
+    getThemes()
+  }, [])
 
   return (
     <>

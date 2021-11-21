@@ -83,8 +83,6 @@ const Index = (props: IProps) => {
         props.orders[i].status === 'Complete' ? completed++ : outstanding++;
         totalPrice += +props.orders[i].price
         const orderDate = new Date(props.orders[i].createdAt)
-        console.log(orderDate)
-        console.log(orderDate >= minDate && orderDate <= referenceDate)
         if (orderDate >= minDate && orderDate <= referenceDate) {
           const index = (minDate.getFullYear() - orderDate.getFullYear()) * 12 + orderDate.getMonth() - minDate.getMonth();
           monthlyCount[index] += 1
