@@ -87,7 +87,9 @@ MyApp.getInitialProps = async ({ ctx }) => {
       "shop"
     );
   }
-  const { shopOrigin, orders, configuration, redirect } = await (await fetch(`${process.env.HOST}/get-shop-data`, {
+
+  console.log(process.env.HOST)
+  const { shopOrigin, orders, configuration, redirect } = await (await fetch(`https://giftit-app-dev.herokuapp.com/get-shop-data`, {
     method: 'GET',
     credentials: "include",
     headers: {
