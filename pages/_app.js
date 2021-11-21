@@ -87,7 +87,6 @@ MyApp.getInitialProps = async ({ ctx }) => {
       "shop"
     );
   }
-  console.log(ctx.query.host)
   const { shopOrigin, orders, configuration, redirect } = await (await fetch(`${process.env.HOST}/get-shop-data`, {
     method: 'GET',
     credentials: "include",
