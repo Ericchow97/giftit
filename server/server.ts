@@ -553,7 +553,8 @@ app.prepare().then(async () => {
   /**
  * Checks Themes for a store 
  */
-   router.get('/get-themes', koaBody(), async (ctx: Koa.Context) => {
+  router.get('/get-themes', koaBody(), async (ctx: Koa.Context) => {
+    console.log('hit!')
     if (ctx.request.headers.authorization) {
       const valid = isVerified(ctx.request.headers.authorization, Shopify.Context.API_SECRET_KEY, Shopify.Context.API_KEY)
       if (!valid) {
