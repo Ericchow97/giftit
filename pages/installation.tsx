@@ -26,6 +26,8 @@ export const InstallationGuide = ({ appName, hostEnv }: IProps) => {
   const [showSteps, setShowSteps] = useState(false)
 
   const shopifyApp = useAppBridge();
+  console.log(shopifyApp)
+  console.log(hostEnv)
 
   // useEffect(() => {
   //   const getThemes = async () => {
