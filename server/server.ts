@@ -314,7 +314,6 @@ app.prepare().then(async () => {
       // retrieve store information from database
       const { orders, configuration, subscribed, accessToken, scriptId } = await db.findOne({ shop: shopOrigin }) || {};
       let redirect = ''
-      console.log(subscribed)
       if (!subscribed!.subscriptionStatus) {
         ctx.client = createClient(shopOrigin, accessToken)
         redirect = await getSubscriptionUrl(ctx, shopOrigin, btoa(`${shopOrigin}/admin`).replace('=', ''))
