@@ -1,9 +1,9 @@
 let giftitRef;
 // get product form
-Array.prototype.forEach.call(document.querySelectorAll('form[action="/cart/add"]'), (e) => {
+for (const e of document.querySelectorAll('form[action="/cart/add"]')) {
     const button = e.querySelector('button')
-    if (button) { giftitRef = e }
-})
+    if (button) { giftitRef = e; break }
+}
 
 const telephone_css = document.createElement('link');
 telephone_css.rel = 'stylesheet';
@@ -24,8 +24,33 @@ telephone_script.onload = function () {
 document.querySelector('head').appendChild(telephone_css);
 document.querySelector('head').appendChild(telephone_script);
 
+const getStyles = (computedStyles) => {
+    const ret = {}
+    for (const style of computedStyles) {
+        ret[style] = computedStyles[style]
+    }
+    return ret
+}
+
 // update button to match type
-document.querySelector('#giftit').classList = giftitRef.querySelector('button').classList
+let currentStyle = getStyles(getComputedStyle(document.querySelector('#giftit')))
+const btnStyleData = giftitRef.querySelector('button').classList
+for (const cssClass of btnStyleData) {
+    document.querySelector('#giftit').classList.add(cssClass)
+    const newStyle = getStyles(getComputedStyle(document.querySelector('#giftit')))
+    let same = true
+    for (const style in currentStyle) {
+        if (currentStyle[style] !== newStyle[style]) {
+            same = false
+            currentStyle = newStyle
+            break
+        }
+    }
+    if (same) {
+        document.querySelector('#giftit').classList.remove(cssClass)
+    }
+}
+
 document.querySelector('#giftit').parentElement.parentElement.classList = giftitRef.querySelector('button').parentElement.parentElement.parentElement.classList
 
 const modalRef = document.querySelector('.giftit-order-modal')
