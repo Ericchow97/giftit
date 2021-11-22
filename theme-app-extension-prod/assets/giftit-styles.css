@@ -36,7 +36,7 @@ div {
 .giftit-gift-fine-print {
   float: right;
   color: gray;
-  margin: 0pt;
+  margin: 0px !important;
   font-size: 1.2rem;
 }
 
