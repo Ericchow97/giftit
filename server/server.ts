@@ -144,12 +144,18 @@ app.prepare().then(async () => {
     { path: "/webhooks", topic: "APP_SUBSCRIPTIONS_UPDATE", webhookHandler: handleAppSubscriptionUpdateWebhook },
   );
 
-  const activeShops = db.find({active: true}, {
-    projection: {shop: 1}
+  const activeShops = db.find({ active: true }, {
+    projection: { shop: 1, scope: 1 }
   })
 
+  // db.updateMany({},{
+  //   $set: {
+  //     scriptId: ''
+  //   }
+  // })
+
   await activeShops.forEach(shop => {
-    ACTIVE_SHOPIFY_SHOPS[shop.shop] = {scope: process.env.SCOPES}
+    ACTIVE_SHOPIFY_SHOPS[shop.shop] = { scope: shop.scope }
   })
 
   server.use(cors());
@@ -159,9 +165,8 @@ app.prepare().then(async () => {
       accessMode: 'offline',
       async afterAuth(ctx: Koa.Context) {
         // Access token and shop available in ctx.state.shopify
-        const { shop, accessToken, scope } = ctx.state.shopify;
-        ACTIVE_SHOPIFY_SHOPS[shop] = { scope: scope };
-
+        const { shop, accessToken } = ctx.state.shopify;
+        ACTIVE_SHOPIFY_SHOPS[shop] = { scope: process.env.SCOPES };
         try {
           // Get shop name 
           const { data } = await axios.get(`https://${shop}/admin/api/2021-07/shop.json`, {
@@ -169,12 +174,15 @@ app.prepare().then(async () => {
               "X-Shopify-Access-Token": accessToken
             },
           });
+
           // create/update database entry
           db.updateOne({ shop: shop }, [{
             $set: {
               shop: shop,
               active: true,
               subscribed: { $cond: [{ $not: ["$subscribed"] }, {}, "$subscribed"] },
+              scriptId: { $cond: [{ $not: ["$script"] }, '', "$script"] },
+              scope: process.env.SCOPES,
               accessToken: accessToken,
               orders: { $cond: [{ $not: ["$orders"] }, [], "$orders"] },
               storeName: data.shop.name,
@@ -198,7 +206,6 @@ app.prepare().then(async () => {
           console.log(err.response.data);
         }
 
-        //TODO: Look into webhooks getting deleted on server restart
         // register webhook for when orders are completed
         const registration_orders = await Shopify.Webhooks.Registry.register({
           shop,
@@ -233,6 +240,7 @@ app.prepare().then(async () => {
           topic: 'APP_SUBSCRIPTIONS_UPDATE',
           webhookHandler: handleAppSubscriptionUpdateWebhook,
         });
+
 
         if (registration_orders.success && registration_name.success && registration_uninstall.success && registration_charge_status.success) {
           console.log('Successfully registered webhook!');
@@ -304,7 +312,7 @@ app.prepare().then(async () => {
     try {
       const shopOrigin = ctx.request.header.shop
       // retrieve store information from database
-      const { orders, configuration, subscribed, accessToken } = await db.findOne({ shop: shopOrigin }) || {};
+      const { orders, configuration, subscribed, accessToken, scriptId } = await db.findOne({ shop: shopOrigin }) || {};
       let redirect = ''
       console.log(subscribed)
       if (!subscribed!.subscriptionStatus) {
@@ -317,7 +325,8 @@ app.prepare().then(async () => {
         orders,
         configuration,
         subscribed,
-        redirect
+        redirect,
+        scriptId
       }
     }
     catch (error) {
@@ -476,6 +485,134 @@ app.prepare().then(async () => {
       catch (error) {
         ctx.body = {
           error,
+        }
+      }
+    }
+  });
+
+  /**
+ * Checks Themes for a store 
+ */
+  router.get('/get-themes', koaBody(), async (ctx: Koa.Context) => {
+    if (ctx.request.headers.authorization) {
+      const valid = isVerified(ctx.request.headers.authorization, Shopify.Context.API_SECRET_KEY, Shopify.Context.API_KEY)
+      if (!valid) {
+        ctx.status = 500;
+        ctx.body = {
+          type: 'Invalid Connection',
+          error: 'Invalid Connection',
+          message: 'You either do not have access or the token is expired, please try again'
+        };
+      }
+      const dest = parseJwt(ctx.request.headers.authorization)
+      try {
+
+        const { shop, accessToken } = await db.findOne({ shop: dest }) || {};
+
+        if (!accessToken || !shop) {
+          throw {
+            type: 'database',
+            message: 'Unable to connect to database'
+          }
+        }
+
+        const ret = await giftitFunctions.getThemes(shop, accessToken)
+        if (!ret) {
+          throw {
+            type: 'Template',
+            message: 'Theme has no product template.'
+          }
+        }
+        ctx.body = {
+          theme: ret.theme,
+          supportedTemplates: ret.supportedTemplates,
+          nonSupportedTemplates: ret.nonSupportedTemplates
+        }
+      }
+      catch (error) {
+        if ((error as CustomError).type) {
+          const err = error as CustomError
+          ctx.status = 500;
+          ctx.body = {
+            type: err.type,
+            error: err.error,
+            message: err.message
+          };
+        }
+      }
+    }
+  });
+
+
+  /**
+   * Installs scriptTag on storefront 
+   */
+  router.post('/install-script', koaBody(), async (ctx: Koa.Context) => {
+    if (ctx.request.headers.authorization) {
+      const valid = isVerified(ctx.request.headers.authorization, Shopify.Context.API_SECRET_KEY, Shopify.Context.API_KEY)
+      if (!valid) {
+        ctx.status = 500;
+        ctx.body = {
+          type: 'Invalid Connection',
+          error: 'Invalid Connection',
+          message: 'You either do not have access or the token is expired, please try again'
+        };
+      }
+      const dest = parseJwt(ctx.request.headers.authorization)
+      try {
+        const { shop, accessToken, scriptId } = await db.findOne({ shop: dest }) || {};
+
+        if (!accessToken || !shop) {
+          throw {
+            type: 'database',
+            message: 'Unable to connect to database'
+          }
+        }
+        if (scriptId) {
+          const scriptUninstall = await giftitFunctions.uninstallScriptTag(shop, accessToken, scriptId)
+          if (!scriptUninstall) {
+            throw {
+              type: 'Uninstallation',
+              message: 'Unable to uninstall script, please refresh and try again.'
+            }
+          }
+          console.log(scriptUninstall)
+          db.updateOne({ shop: dest }, {
+            $set: {
+              scriptId: ''
+            }
+          });
+          ctx.body = {
+            installedScriptId: '',
+          }
+        } else {
+          const installedScriptId = await giftitFunctions.installScriptTag(shop, accessToken)
+          if (!installedScriptId) {
+            throw {
+              type: 'Installation',
+              message: 'Unable to install script, please refresh and try again.'
+            }
+          }
+          db.updateOne({ shop: dest }, {
+            $set: {
+              scriptId: installedScriptId
+            }
+          });
+
+          ctx.body = {
+            installedScriptId: installedScriptId
+          }
+        }
+      }
+      catch (error) {
+        if ((error as CustomError).type) {
+          const err = error as CustomError
+          ctx.status = 500;
+          ctx.body = {
+            type: err.type,
+            error: err.error,
+            message: err.message
+          };
         }
       }
     }
@@ -707,39 +844,23 @@ app.prepare().then(async () => {
   /**
    * Endpoint to serve script
    */
-  // router.get('/giftit-script', koaBody(), async (ctx: Koa.Context) => {
-  //   try {
-  //     ctx.body = fs.readFileSync(__dirname + '../shopify-web/giftit-product-script.js', "utf8");
-  //   } catch (error) {
-  //     if ((error as CustomError).type) {
-  //       const err = error as CustomError
-  //       console.log(error)
-  //       ctx.status = 500;
-  //       ctx.body = {
-  //         type: err.type,
-  //         message: err.message
-  //       };
-  //     }
-  //   }
-  // })
+  router.get('/giftit-script', koaBody(), async (ctx: Koa.Context) => {
+    try {
+      ctx.body = fs.readFileSync(path.join(__dirname + '/../shopify-web', 'giftit-product-script.js'), "utf8");
+    } catch (error) {
+      console.log(error)
+    }
+  })
 
   /**
    * Endpoint to serve css
    */
   router.get('/giftit-css', koaBody(), async (ctx: Koa.Context) => {
     try {
-      ctx.body = fs.readFileSync(path.join(__dirname, '..', 'shopify-web', 'giftit-styles.css'), "utf8");
+      ctx.body = fs.readFileSync(path.join(__dirname, '..', 'theme-app-extension-prod', 'assets', 'giftit-styles.css'), "utf8");
       ctx.type = "text/css";
     } catch (error) {
-      if ((error as CustomError).type) {
-        const err = error as CustomError
-        console.log(error)
-        ctx.status = 500;
-        ctx.body = {
-          type: err.type,
-          message: err.message
-        };
-      }
+      console.log(error)
     }
   })
 
@@ -750,15 +871,7 @@ app.prepare().then(async () => {
     try {
       ctx.body = fs.readFileSync(path.join(__dirname, '..', 'shopify-web', 'giftit-privacy-policy.html'), "utf8");
     } catch (error) {
-      if ((error as CustomError).type) {
-        const err = error as CustomError
-        console.log(error)
-        ctx.status = 500;
-        ctx.body = {
-          type: err.type,
-          message: err.message
-        };
-      }
+     console.log(error)
     }
   })
 
@@ -927,8 +1040,8 @@ app.prepare().then(async () => {
   router.get("(.*)", async (ctx: Koa.Context) => {
     const shop = ctx.query.shop as string;
 
-    // This shop hasn't been seen yet, go through OAuth to create a session
-    if (ACTIVE_SHOPIFY_SHOPS[shop] === undefined) {
+    // This shop hasn't been seen yet or updated scopes, go through OAuth to create a session
+    if (ACTIVE_SHOPIFY_SHOPS[shop] === undefined || ACTIVE_SHOPIFY_SHOPS[shop].scope !== process.env.SCOPES) {
       ctx.redirect(`/auth?shop=${shop}`);
     } else {
       await handleRequest(ctx);

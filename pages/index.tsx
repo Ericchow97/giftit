@@ -20,7 +20,8 @@ import {Redirect} from '@shopify/app-bridge/actions';
 const img = 'https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg';
 
 interface IProps {
-  appName: string;
+  appName: string,
+  hostEnv: string,
   orders: {
     id: string,
     name: string,
@@ -48,7 +49,7 @@ const Index = (props: IProps) => {
     const getOrderPrices = async (totalPrice: number) => {
       const sessionToken = await getSessionToken(shopifyApp);
       try {
-        const currencyCode = await (await fetch(`https://giftit-app.herokuapp.com/graphql`, {
+        const currencyCode = await (await fetch(`${props.hostEnv}/graphql`, {
           method: 'POST',
           mode: 'cors',
           headers: {
@@ -82,8 +83,6 @@ const Index = (props: IProps) => {
         props.orders[i].status === 'Complete' ? completed++ : outstanding++;
         totalPrice += +props.orders[i].price
         const orderDate = new Date(props.orders[i].createdAt)
-        console.log(orderDate)
-        console.log(orderDate >= minDate && orderDate <= referenceDate)
         if (orderDate >= minDate && orderDate <= referenceDate) {
           const index = (minDate.getFullYear() - orderDate.getFullYear()) * 12 + orderDate.getMonth() - minDate.getMonth();
           monthlyCount[index] += 1
@@ -192,6 +191,7 @@ const Index = (props: IProps) => {
 Index.propTypes = {
   appName: PropTypes.string.isRequired,
   orders: PropTypes.array.isRequired,
+  hostEnv: PropTypes.string.isRequired,
 }
 
 export default Index;

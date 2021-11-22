@@ -1,6 +1,8 @@
 import "isomorphic-fetch";
 import { gql } from "apollo-boost";
+import dotenv from "dotenv";
 
+dotenv.config();
 //TODO: Limit free trial period, cannot redo free trial
 export function RECURRING_CREATE(url) {
   return gql`
@@ -8,6 +10,7 @@ export function RECURRING_CREATE(url) {
       appSubscriptionCreate(
           name: "Basic Plan"
           returnUrl: "${url}"
+          test: ${!process.env.NPM_CONFIG_PRODUCTION}
           trialDays: 30
           lineItems: [
             {

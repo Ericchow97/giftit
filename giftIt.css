@@ -48,3 +48,15 @@ form {
 .Polaris-MediaCard__ActionContainer.Polaris-MediaCard--portrait {
     padding-top: 0;
 }
+
+.Polaris-Layout__Annotation {
+    flex: 0 0 100%;
+}
+
+.Polaris-Layout__AnnotatedSection {
+    margin-top: 0;
+}
+
+.Polaris-Layout__Annotation, .Polaris-Layout__AnnotationContent {
+    margin-top: 0;
+}

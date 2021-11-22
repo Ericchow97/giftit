@@ -73,7 +73,7 @@ const MyApp = ({ Component, shopOrigin, pageProps, host, redirect }) => {
         <Provider config={config}>
           <ClientRouter />
           <RoutePropagator />
-          <MyProvider Component={Component} {...props} {...config} redirect={redirect} />
+          <MyProvider Component={Component} {...props} {...config} redirect={redirect}/>
         </Provider>
       </AppProvider>
     </>
@@ -87,8 +87,7 @@ MyApp.getInitialProps = async ({ ctx }) => {
       "shop"
     );
   }
-
-  const { shopOrigin, orders, configuration, redirect } = await (await fetch(`https://giftit-app.herokuapp.com/get-shop-data`, {
+  const { shopOrigin, orders, configuration, redirect, scriptId } = await (await fetch(`${process.env.HOST}/get-shop-data`, {
     method: 'GET',
     credentials: "include",
     headers: {
@@ -103,8 +102,10 @@ MyApp.getInitialProps = async ({ ctx }) => {
       origin: shopOrigin ? shopOrigin : shopName,
       appName: 'GiftIt',
       orders: (orders ? orders : []),
-      configuration
-    }
+      configuration,
+      scriptId,
+      hostEnv: process.env.HOST
+    },
   }
 };
 

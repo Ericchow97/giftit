@@ -4,7 +4,7 @@ dotenv.config({ path: '../../.env' });
 
 import axios from 'axios';
 import countries from "i18n-iso-countries";
-import { queryNodes, inventoryLevels, lineItems, Order, emailConfiguration } from '../../types';
+import { queryNodes, inventoryLevels, lineItems, Order, emailConfiguration, ThemeData } from '../../types';
 
 import sgMail from '@sendgrid/mail';
 import fs from 'fs';
@@ -14,6 +14,7 @@ const {
     SENDGRID_API_KEY,
     TWILIO_ACCOUNT_SID,
     TWILIO_AUTH_TOKEN,
+    HOST,
 } = process.env;
 
 sgMail.setApiKey(SENDGRID_API_KEY!)
@@ -105,6 +106,101 @@ export const handleInstallation = async (shop: string, accessToken: string): Pro
     }
 }
 
+
+/**
+ * Identifies the type of theme merchant currently has installed (Online Store 2.0 or Vintage Theme)
+ * 
+ * @param shop Name of the shopify store
+ * @param accessToken Shopify accessToken for specific store
+ * @return 
+ */
+export const getThemes = async (shop: string, accessToken: string): Promise<ThemeData | void> => {
+    try {
+        const ret: ThemeData = {
+            theme: '',
+            supportedTemplates: [],
+            nonSupportedTemplates: []
+        }
+        // Get list of themes to find the main theme
+        const { data: { themes } } = await axios.get(`https://${shop}/admin/api/2021-10/themes.json`, {
+            headers: {
+                "X-Shopify-Access-Token": accessToken
+            }
+        })
+        const publishedTheme = themes.find((theme: any) => theme.role === 'main')
+        ret.theme = publishedTheme.name
+
+        // Get list of product assets in theme
+        const { data: { assets } } = await axios.get(`https://${shop}/admin/api/2021-10/themes/${publishedTheme.id}/assets.json`, {
+            headers: {
+                "X-Shopify-Access-Token": accessToken
+            }
+        })
+        const productTemplates = assets.filter((asset: any) => asset.key.startsWith("templates/product"))
+        if (!productTemplates.length) {
+            return ret
+        }
+
+        // Determine if product blocks are supported for each Product Template
+        const templatesWithMainSections = (await Promise.all(productTemplates.map(async (file: any) => {
+            const { data: { asset } } = await axios.get(`https://${shop}/admin/api/2021-10/themes/${publishedTheme.id}/assets.json?asset[key]=${file.key}`, {
+                headers: {
+                    "X-Shopify-Access-Token": accessToken
+                }
+            })
+            try {
+                const json = JSON.parse(asset.value)
+                const main: any = Object.values(json.sections).find((section: any) => section.type)
+                if (main) {
+                    const ret = assets.find((file: any) => file.key === `sections/${main.type}.liquid`)
+                    ret.template = file.key
+                    return ret;
+                }
+            } catch {
+                ret.nonSupportedTemplates.push(file.key)
+            }
+        }))).filter((value) => value)
+
+        // only perform query on unique sections
+        const uniqueSections = [...new Set(templatesWithMainSections)];
+        //TODO: Test non json template
+        if (!uniqueSections) {
+            return ret
+        }
+
+        // Of the JSON files, if schema or @app in block exists, then app blocks are supported
+        const sectionsWithAppBlock = (await Promise.all(uniqueSections.map(async (file: any) => {
+            let acceptsAppBlock = false;
+            const { data: { asset } } = await axios.get(`https://${shop}/admin/api/2021-10/themes/${publishedTheme.id}/assets.json?asset[key]=${file.key}`, {
+                headers: {
+                    "X-Shopify-Access-Token": accessToken
+                }
+            })
+
+            const match = asset.value.match(/\{\%\s+schema\s+\%\}([\s\S]*?)\{\%\s+endschema\s+\%\}/m)
+            const schema = JSON.parse(match[1]);
+
+            if (schema && schema.blocks) {
+                acceptsAppBlock = schema.blocks.some(((b: any) => b.type === '@app'));
+            }
+
+            return acceptsAppBlock ? file.key : null
+        }))).filter((value) => value)
+
+        // sort the templates based on what is supported
+        templatesWithMainSections.forEach((element: any) => {
+            if (sectionsWithAppBlock.some((val: string) => element.key === val)) {
+                ret.supportedTemplates.push(element.template)
+            } else {
+                ret.nonSupportedTemplates.push(element.template)
+            }
+        })
+        return ret
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 /**
  * Installs Script Tag on Older Themes
  * 
@@ -112,29 +208,66 @@ export const handleInstallation = async (shop: string, accessToken: string): Pro
  * @param accessToken Shopify accessToken for specific store
  * @return 
  */
- export const installScriptTag = async (shop: string, accessToken: string): Promise<void> => {
+export const installScriptTag = async (shop: string, accessToken: string): Promise<string | void> => {
     try {
-        // install script tags
-        // see if script tag already exists
-        const { data: { script_tags } } = await axios.get(`https://${shop}/admin/api/2021-04/script_tags.json?src=https://giftit-app.herokuapp.com/giftit-script`, {
+        const { data: { data: { scriptTagCreate: { scriptTag } } } } = await axios.post(`https://${shop}/admin/api/2021-01/graphql.json`, {
+            query: `mutation scriptTagCreate($input: ScriptTagInput!) {
+                scriptTagCreate(input: $input) {
+                    userErrors {
+                        field
+                        message
+                    }
+                    scriptTag {
+                        id
+                    }
+                }
+            }`,
+            variables: {
+                input: {
+                    displayScope: 'ONLINE_STORE',
+                    src: `${HOST}/giftit-script`
+                }
+            }
+        }, {
             headers: {
                 "X-Shopify-Access-Token": accessToken
             }
-        });
-        // if script tag does not exist, then add 
-        if (!script_tags.length) {
-            const { data } = await axios.post(`https://${shop}/admin/api/2021-04/script_tags.json`, {
-                "script_tag": {
-                    "event": "onload",
-                    "src": "https://giftit-app.herokuapp.com/giftit-script"
+        })
+
+        return scriptTag.id
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+/**
+ * Uninstalls Script Tag on Older Themes
+ * 
+ * @param shop Name of the shopify store
+ * @param accessToken Shopify accessToken for specific store
+ * @return 
+ */
+export const uninstallScriptTag = async (shop: string, accessToken: string, scriptId: string): Promise<string | void> => {
+    try {
+        const { data: { data: { scriptTagDelete } } } = await axios.post(`https://${shop}/admin/api/2021-01/graphql.json`, {
+            query: `mutation scriptTagDelete($id: ID!) {
+                scriptTagDelete(id: $id) {
+                    userErrors {
+                        field
+                        message
+                    }
+                    deletedScriptTagId
                 }
-            }, {
-                headers: {
-                    "X-Shopify-Access-Token": accessToken
-                }
-            });
-            console.log(data)
-        }
+            }`,
+            variables: {
+                id: scriptId
+            }
+        }, {
+            headers: {
+                "X-Shopify-Access-Token": accessToken
+            }
+        })
+        return scriptTagDelete
     } catch (err) {
         console.log(err)
     }
