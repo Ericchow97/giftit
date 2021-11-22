@@ -846,8 +846,6 @@ app.prepare().then(async () => {
    */
   router.get('/giftit-script', koaBody(), async (ctx: Koa.Context) => {
     try {
-      console.log(__dirname)
-      console.log(path.join(__dirname + '/../shopify-web', 'giftit-product-script.js'))
       ctx.body = fs.readFileSync(path.join(__dirname + '/../shopify-web', 'giftit-product-script.js'), "utf8");
     } catch (error) {
       console.log(error)
