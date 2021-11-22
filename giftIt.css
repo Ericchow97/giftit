@@ -49,7 +49,7 @@ form {
     padding-top: 0;
 }
 
-.Polaris-Layout__Annotation {
+.Polaris-Layout__Section .Polaris-Layout__Annotation {
     flex: 0 0 100%;
 }
 
