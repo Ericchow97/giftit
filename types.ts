@@ -10,6 +10,8 @@ export interface ShopCollection {
     storeEmail: string,
     origin: string,
     configuration: emailConfiguration,
+    scope: string,
+    scriptId: string,
 }
 
 export interface emailConfiguration {
@@ -74,4 +76,10 @@ export interface CustomError {
     type: string,
     error: string,
     message: string
+}
+
+export interface ThemeData {
+    theme: string,
+    supportedTemplates: string[],
+    nonSupportedTemplates: string[]
 }
