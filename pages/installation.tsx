@@ -89,12 +89,12 @@ export const InstallationGuide = ({ appName, hostEnv, scriptId }: IProps) => {
       toggleFailBanner(true)
     }
   }
-
+  console.log(installedScriptId)
   return (
     <>
       {showSuccessBanner &&
         <Banner
-          title="GiftIt has successfully been installed!"
+          title={`GiftIt has successfully been ${installedScriptId ? "installed" : "uninstalled"}!`}
           status="success"
           toggleBanner={toggleSuccessBanner}
           disableHelp={true}
@@ -131,7 +131,7 @@ export const InstallationGuide = ({ appName, hostEnv, scriptId }: IProps) => {
           title={`${appName} Installation Instructions`}
         >
           <Layout sectioned={true}>
-            {allThemes.nonSupportedTemplates.length > 0 &&
+            {(allThemes.nonSupportedTemplates.length > 0 || installedScriptId) &&
               <Layout.AnnotatedSection
                 title="Vintage Themes"
                 description="For older Shopify Themes"
