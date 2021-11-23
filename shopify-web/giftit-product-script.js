@@ -16,7 +16,7 @@ for (const e of document.querySelectorAll('form[action="/cart/add"]')) {
     if (button) { giftitRef = e; break }
 }
 
-if (giftitRef) {
+if (giftitRef && window.location.pathname.indexOf('/products/') === 0) {
     const telephone_css = document.createElement('link');
     telephone_css.rel = 'stylesheet';
     telephone_css.type = 'text/css';
