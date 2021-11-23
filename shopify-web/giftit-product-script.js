@@ -294,13 +294,17 @@ if (giftitRef && window.location.pathname.indexOf('/products/') === 0) {
                     </p>
                 </div>
             </div>
-
             <div class="giftit-modal-footer">
-                <button type="button" id='giftit-back-button' class="giftit-btn hide"> Back </button>
-                <button type="button" id='giftit-next-button' class="giftit-btn giftit-btn-primary"> Next </button>
-                <button id='giftit-submit-button' class="giftit-btn giftit-btn-primary hide"> Submit </button>
-                <button type="button" id='giftit-close-button' class="giftit-btn giftit-close-button hide"> Close
-                </button>
+                <div class="giftit-modal-footer-img">
+                    <img src="https://giftit-assets.s3.us-west-2.amazonaws.com/Logo3.png" height="42.5" width="89.25">
+                </div>
+                <div class="giftit-modal-footer-button">
+                    <button type="button" id='giftit-back-button' class="giftit-btn hide"> Back </button>
+                    <button type="button" id='giftit-next-button' class="giftit-btn giftit-btn-primary"> Next </button>
+                    <button id='giftit-submit-button' class="giftit-btn giftit-btn-primary hide"> Submit </button>
+                    <button type="button" id='giftit-close-button' class="giftit-btn giftit-close-button hide"> Close
+                    </button>
+                </div>
             </div>
         </div>
     </div>
