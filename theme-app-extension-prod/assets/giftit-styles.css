@@ -34,7 +34,7 @@ div {
 }
 
 .giftit-gift-fine-print {
-  float: right;
+  text-align: right;
   color: gray;
   margin: 0px !important;
   font-size: 1.2rem;
@@ -54,7 +54,7 @@ div {
 .giftit-order-modal {
   position: fixed; /* Stay in place */
   padding-top: 100px;
-  z-index: 1001; /* Sit on top */
+  z-index: 2147483647; /* Sit on top */
   left: 0;
   top: 0;
   width: 100%; /* Full width */
@@ -84,7 +84,7 @@ div {
 }
 
 .giftit-modal-display-content {
-  padding: 32px 0;
+  padding: 32px 0 0;
 }
 .giftit-modal-display-content:last-child {
   text-align: center;
@@ -219,7 +219,7 @@ div {
   margin: 4px;
 }
 
-.giftit-modal-footer > .giftit-close-button {
+.giftit-modal-footer .giftit-close-button {
   background-color: red;
 }
 
@@ -304,10 +304,19 @@ div {
 }
 
 .giftit-modal-footer {
-  padding: 8px 16px;
+  padding: 8px 0 16px;
   border-top: 1px solid #e5e5e5;
   color: white;
   text-align: right;
+  display: flex;
+}
+
+.giftit-modal-footer-img {
+  margin-left: 5px;
+}
+
+.giftit-modal-footer-button{
+  flex-grow: 1;
 }
 
 /* The Close Button */
@@ -465,7 +474,7 @@ button[disabled] {
 
 @media only screen and (max-height: 800px) and (max-width: 650px) {
   .giftit-modal-display-content {
-    padding: 0 0 20px;
+    padding: 0;
   }
 
   .giftit-container {
