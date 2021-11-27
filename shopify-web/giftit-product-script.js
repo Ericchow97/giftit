@@ -43,6 +43,8 @@ if (giftitRef && window.location.pathname.indexOf('/products/') !== -1) {
         <button type='button' id='giftit' name='Gift_Item'>Give as a gift</button>
     </form>
 </div>
+`)
+    document.body.insertAdjacentHTML('beforeend', `
 <form action="https://giftit-app.herokuapp.com/gift-checkout" method="POST" autocomplete="on" class="giftit-form">
     <div id="giftit-modal" class="giftit-order-modal hide">
         <div class="giftit-modal-content">
