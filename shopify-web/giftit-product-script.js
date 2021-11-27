@@ -262,7 +262,7 @@ if (giftitRef && window.location.pathname.indexOf('/products/') !== -1) {
                 </div>
                 <div class="giftit-message">
                     <div class="giftit-item-title">Message:</div>
-                    <p id='giftit-message'></p>
+                    <p id='giftit-message' class="giftit-message"></p>
                 </div>
             </div>
             <div class='giftit-modal-display-content hide'>
