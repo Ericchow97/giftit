@@ -598,3 +598,7 @@ button[disabled] {
 .giftit-btn-address {
   display: inline-block !important;
 }
+
+.giftit-message {
+  color:black;
+}
