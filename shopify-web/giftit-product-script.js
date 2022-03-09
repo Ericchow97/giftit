@@ -320,9 +320,11 @@ if (giftitRef && window.location.pathname.indexOf('/products/') !== -1) {
         }
         return ret
     }
+
     // update button to match type
     let currentStyle = getStyles(getComputedStyle(document.querySelector('#giftit')))
-    const btnStyleData = giftitRef.querySelector('button').classList
+    const copyBtnRef = giftitRef.querySelector('button[type="submit"]') || giftitRef.querySelector('button')
+    const btnStyleData = copyBtnRef.classList
     for (const cssClass of btnStyleData) {
         document.querySelector('#giftit').classList.add(cssClass)
         const newStyle = getStyles(getComputedStyle(document.querySelector('#giftit')))
