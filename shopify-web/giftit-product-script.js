@@ -327,18 +327,18 @@ if (giftitRef && window.location.pathname.indexOf('/products/') !== -1) {
     const btnStyleData = copyBtnRef.classList
     for (const cssClass of btnStyleData) {
         document.querySelector('#giftit').classList.add(cssClass)
-        const newStyle = getStyles(getComputedStyle(document.querySelector('#giftit')))
-        let same = true
-        for (const style in currentStyle) {
-            if (currentStyle[style] !== newStyle[style]) {
-                same = false
-                currentStyle = newStyle
-                break
-            }
-        }
-        if (same) {
-            document.querySelector('#giftit').classList.remove(cssClass)
-        }
+        // const newStyle = getStyles(getComputedStyle(document.querySelector('#giftit')))
+        // let same = true
+        // for (const style in currentStyle) {
+        //     if (currentStyle[style] !== newStyle[style]) {
+        //         same = false
+        //         currentStyle = newStyle
+        //         break
+        //     }
+        // }
+        // if (same) {
+        //     document.querySelector('#giftit').classList.remove(cssClass)
+        // }
     }
 
     document.querySelector('#giftit').parentElement.parentElement.classList = giftitRef.querySelector('button').parentElement.parentElement.parentElement.classList
