@@ -762,6 +762,7 @@ app.prepare().then(async () => {
         }
       }
       const updateAddress = await giftitFunctions.updateCustomerAddress(accessToken, updateInformation, url);
+      console.log(updateAddress)
       if (updateAddress.type === 'error') {
         //TODO: handle other error messages & display on user side for incorrect province and country
         throw {

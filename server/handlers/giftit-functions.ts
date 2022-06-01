@@ -644,8 +644,10 @@ const find_province = (arr: any, key: string): number => {
 // TODO: address validation
 //update shipping address for draft order
 export const updateCustomerAddress = async (accessToken: string, updateInformation: any, url: string): Promise<returnStatus> => {
+    console.log(updateInformation.country)
     if (updateInformation.country.toLowerCase() === 'united states') updateInformation.country += ' of America'
     const country_code = countries.getAlpha2Code(updateInformation.country, "en");
+    console.log(country_code)
     let province = '';
     //TODO: must link back an error response to user
     if (!country_code) {
