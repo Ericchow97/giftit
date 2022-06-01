@@ -27,6 +27,85 @@ interface returnStatus {
     content?: any,
 }
 
+const states = [
+    ['Alabama', 'AL'],
+    ['Alaska', 'AK'],
+    ['American Samoa', 'AS'],
+    ['Arizona', 'AZ'],
+    ['Arkansas', 'AR'],
+    ['Armed Forces Americas', 'AA'],
+    ['Armed Forces Europe', 'AE'],
+    ['Armed Forces Pacific', 'AP'],
+    ['California', 'CA'],
+    ['Colorado', 'CO'],
+    ['Connecticut', 'CT'],
+    ['Delaware', 'DE'],
+    ['District Of Columbia', 'DC'],
+    ['Florida', 'FL'],
+    ['Georgia', 'GA'],
+    ['Guam', 'GU'],
+    ['Hawaii', 'HI'],
+    ['Idaho', 'ID'],
+    ['Illinois', 'IL'],
+    ['Indiana', 'IN'],
+    ['Iowa', 'IA'],
+    ['Kansas', 'KS'],
+    ['Kentucky', 'KY'],
+    ['Louisiana', 'LA'],
+    ['Maine', 'ME'],
+    ['Marshall Islands', 'MH'],
+    ['Maryland', 'MD'],
+    ['Massachusetts', 'MA'],
+    ['Michigan', 'MI'],
+    ['Minnesota', 'MN'],
+    ['Mississippi', 'MS'],
+    ['Missouri', 'MO'],
+    ['Montana', 'MT'],
+    ['Nebraska', 'NE'],
+    ['Nevada', 'NV'],
+    ['New Hampshire', 'NH'],
+    ['New Jersey', 'NJ'],
+    ['New Mexico', 'NM'],
+    ['New York', 'NY'],
+    ['North Carolina', 'NC'],
+    ['North Dakota', 'ND'],
+    ['Northern Mariana Islands', 'NP'],
+    ['Ohio', 'OH'],
+    ['Oklahoma', 'OK'],
+    ['Oregon', 'OR'],
+    ['Pennsylvania', 'PA'],
+    ['Puerto Rico', 'PR'],
+    ['Rhode Island', 'RI'],
+    ['South Carolina', 'SC'],
+    ['South Dakota', 'SD'],
+    ['Tennessee', 'TN'],
+    ['Texas', 'TX'],
+    ['US Virgin Islands', 'VI'],
+    ['Utah', 'UT'],
+    ['Vermont', 'VT'],
+    ['Virginia', 'VA'],
+    ['Washington', 'WA'],
+    ['West Virginia', 'WV'],
+    ['Wisconsin', 'WI'],
+    ['Wyoming', 'WY'],
+  ];
+
+  const provinces = [
+    ['Alberta', 'AB'],
+    ['British Columbia', 'BC'],
+    ['Manitoba', 'MB'],
+    ['New Brunswick', 'NB'],
+    ['Newfoundland', 'NF'],
+    ['Northwest Territory', 'NT'],
+    ['Nova Scotia', 'NS'],
+    ['Nunavut', 'NU'],
+    ['Ontario', 'ON'],
+    ['Prince Edward Island', 'PE'],
+    ['Quebec', 'QC'],
+    ['Saskatchewan', 'SK'],
+    ['Yukon', 'YT'],
+  ];
+
 //TODO1: Update all to gql query
 /**
  * Installs application
@@ -627,10 +706,10 @@ const find_province = (arr: any, key: string): number => {
     while (start <= end) {
         let middle = Math.floor((start + end) / 2);
 
-        if (arr[middle].name === key) {
+        if (arr[middle][0] === key) {
             // found the key
             return middle;
-        } else if (arr[middle].name < key) {
+        } else if (arr[middle][0] < key) {
             // continue searching to the right
             start = middle + 1;
         } else {
@@ -654,18 +733,17 @@ export const updateCustomerAddress = async (accessToken: string, updateInformati
 
     try {
         // shopify get only supports CA/US
-        if (country_code === 'CA') {
+        if (country_code === 'CA' || country_code === 'US') {
             // Get all provinces
-            const { data: { countries } } = await axios.get(`https://${updateInformation.shop}/admin/api/2022-01/countries.json`, {
-                headers: {
-                    "X-Shopify-Access-Token": accessToken
-                }
-            })
-
-            const tempProvince = countries[0].provinces[find_province(countries[0].provinces, updateInformation.province.charAt(0).toUpperCase() + updateInformation.province.slice(1).toLowerCase())]
+            let tempProvince: any;
+            if (country_code === 'CA') {
+                tempProvince = states[find_province(states, updateInformation.province.charAt(0).toUpperCase() + updateInformation.province.slice(1).toLowerCase())]
+            } else {
+                tempProvince = provinces[find_province(provinces, updateInformation.province.charAt(0).toUpperCase() + updateInformation.province.slice(1).toLowerCase())]
+            }
 
             if (tempProvince) {
-                province = tempProvince.code
+                province = tempProvince[1]
             } else {
                 //TODO: must link back an error response to user
                 return { type: 'error', message: 'invalid province' }
