@@ -644,10 +644,8 @@ const find_province = (arr: any, key: string): number => {
 // TODO: address validation
 //update shipping address for draft order
 export const updateCustomerAddress = async (accessToken: string, updateInformation: any, url: string): Promise<returnStatus> => {
-    console.log(updateInformation.country)
     if (updateInformation.country.toLowerCase() === 'united states') updateInformation.country += ' of America'
     const country_code = countries.getAlpha2Code(updateInformation.country, "en");
-    console.log(country_code)
     let province = '';
     //TODO: must link back an error response to user
     if (!country_code) {
@@ -656,20 +654,15 @@ export const updateCustomerAddress = async (accessToken: string, updateInformati
 
     try {
         // shopify get only supports CA/US
-        if (country_code === 'CA' || country_code === 'US') {
+        if (country_code === 'CA') {
             // Get all provinces
-            const { data: { countries } } = await axios.get(`https://${updateInformation.shop}/admin/api/2021-01/countries.json`, {
+            const { data: { countries } } = await axios.get(`https://${updateInformation.shop}/admin/api/2022-01/countries.json`, {
                 headers: {
                     "X-Shopify-Access-Token": accessToken
                 }
             })
 
-            let tempProvince: any;
-            if (country_code === 'CA') {
-                tempProvince = countries[0].provinces[find_province(countries[0].provinces, updateInformation.province.charAt(0).toUpperCase() + updateInformation.province.slice(1).toLowerCase())]
-            } else {
-                tempProvince = countries[1].provinces[find_province(countries[1].provinces, updateInformation.province.charAt(0).toUpperCase() + updateInformation.province.slice(1).toLowerCase())]
-            }
+            const tempProvince = countries[0].provinces[find_province(countries[0].provinces, updateInformation.province.charAt(0).toUpperCase() + updateInformation.province.slice(1).toLowerCase())]
 
             if (tempProvince) {
                 province = tempProvince.code
