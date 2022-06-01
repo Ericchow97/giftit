@@ -705,7 +705,8 @@ const find_province = (arr: any, key: string): number => {
     let end = arr.length - 1;
     while (start <= end) {
         let middle = Math.floor((start + end) / 2);
-
+        console.log(arr[middle][0])
+        console.log(key)
         if (arr[middle][0] === key) {
             // found the key
             return middle;
@@ -741,6 +742,8 @@ export const updateCustomerAddress = async (accessToken: string, updateInformati
             } else {
                 tempProvince = provinces[find_province(provinces, updateInformation.province.charAt(0).toUpperCase() + updateInformation.province.slice(1).toLowerCase())]
             }
+
+            console.log(tempProvince)
 
             if (tempProvince) {
                 province = tempProvince[1]
