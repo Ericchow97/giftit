@@ -733,12 +733,21 @@ export const updateCustomerAddress = async (accessToken: string, updateInformati
     try {
         // shopify get only supports CA/US
         if (country_code === 'CA' || country_code === 'US') {
-            // Get all provinces
+
+            // proper case the province
+            const splitProv = updateInformation.province.toLowerCase().split(' ');
+            for (let i = 0; i < splitProv.length; i++) {
+                // Assign it back to the array
+                splitProv[i] = splitProv[i].charAt(0).toUpperCase() + splitProv[i].substring(1);     
+            }
+            updateInformation.province = splitProv.join(' '); 
+
+            // return province/state based on country (only support CAN & US)
             let tempProvince: any;
             if (country_code === 'CA') {
-                tempProvince = provinces[find_province(provinces, updateInformation.province.charAt(0).toUpperCase() + updateInformation.province.slice(1).toLowerCase())]
+                tempProvince = provinces[find_province(provinces, updateInformation.province)]
             } else {
-                tempProvince = states[find_province(states, updateInformation.province.charAt(0).toUpperCase() + updateInformation.province.slice(1).toLowerCase())]
+                tempProvince = states[find_province(states, updateInformation.province)]
             }
 
             if (tempProvince) {
